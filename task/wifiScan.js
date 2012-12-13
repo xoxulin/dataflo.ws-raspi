@@ -17,87 +17,69 @@ util.extend (wifiScanTask.prototype, {
 	
 	run: function () {
 
-		var self = this;
-		
-		//console.log ('run', self.pager);
-		
-		self.emit ('log', 'requested ' + self.pager.filter);
-		
-		// params preparation
-		var args = ['wlan0', 'scan'];
-		
-		var fork  = spawn(COMMAND, args);
-		
-		var stderr = '';
-		var stdout = '';
+		var self = this,
+			args = ['wlan0', 'scan'],
+			fork  = spawn(COMMAND, args),
+			stderr = '',
+			stdout = '';
 		
 		fork.stdout.on('data', function (data) {
+			
 			stdout += data;
-//			console.log (1);
+			
 		});
 
 		fork.stderr.on('data', function (data) {
+			
 			stderr += data;
-//			console.log (2);
+			
 		});
 
 		fork.on('exit', function (code) {
 
-			var docs = [];
-			var records = stdout.split ("\n\n");
-		
-			records.map (function (item) {
-			
-				console.log(item);
-				
-//				var account;
-//				
-//				item.split (/\n\s+/).join ('').split ("\n").map (function (item) {
-//					if (!item || item.charAt (0) == '#')
-//						return
-//					
-//					var parts = item.split (': ');
-//					if (parts[0].charAt(parts[0].length - 1) == ':') {
-//						parts[0] = parts[0].substr (0, parts[0].length - 1)
-//						if (parts[0].indexOf('Photo') == -1) {
-//							parts[1] = new Buffer(parts[1], 'base64').toString('utf-8');
-//						}
-//					}
-//					
-//					if (!account)
-//						account = {};
-//					
-//					if (self.toLowerCase)
-//						parts[0] = parts[0].toLowerCase();
-//					
-//					if (account[parts[0]] && account[parts[0]].constructor == Array) {
-//						account[parts[0]].push (parts[1]);
-//					} else if (account[parts[0]]) {
-//						account[parts[0]] = [account[parts[0]], parts[1]];
-//					} else {
-//						account[parts[0]] = parts[1];
-//					}
-//					
-//				});
-//				
-//				if (account) {
-//					if (self.mapping) {
-//						self.mapFields (account);
-//					}
-//					
-//					docs.push (account);
-//				}
-				
-			});
-			
-			self.completed ({
-				success: true,
-				total: 0,
-				err: null,
-				data: []
-			});
+			self.parseIWList(stdout);
 		
 		});
 	
+	},
+	
+	parseIWList: function() {
+		
+		var self = this;
+		
+		var docs = [],
+			currentWiFi = {},
+			records = stdout.split ("\n");
+		
+		console.log();
+	
+		records.map (function (item) {
+		
+			console.log(item);
+			
+//				Cell 01 - Address: 58:BC:27:5C:D4:E0
+//                    ESSID:"<hidden>"
+//                    Protocol:IEEE 802.11bgn
+//                    Mode:Master
+//                    Frequency:2.412 GHz (Channel 1)
+//                    Encryption key:on
+//                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 6 Mb/s; 9 Mb/s
+//                              11 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s; 36 Mb/s
+//                              48 Mb/s; 54 Mb/s
+//                    Extra:rsn_ie=30180100000fac020200000fac02000fac040100000fac022800
+//                    IE: IEEE 802.11i/WPA2 Version 1
+//                        Group Cipher : TKIP
+//                        Pairwise Ciphers (2) : TKIP CCMP
+//                        Authentication Suites (1) : PSK
+//                    Signal level=62/100
+			
+		});
+		
+		self.completed ({
+			success: true,
+			total: 0,
+			err: null,
+			data: []
+		});
 	}
 });
