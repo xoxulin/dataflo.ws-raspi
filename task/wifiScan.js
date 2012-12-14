@@ -47,43 +47,41 @@ util.extend (wifiScanTask.prototype, {
 		
 		var self = this;
 		
-		var result = [],
+		var wifiList = [],
 			currentWiFi,
-			cells = output.split (/Cell \d+ - /);
+			lastParameter
+			cells = output.split (/Cell \d+ - /),
+			parameterRe = /^\s*([^:=])(:|=)\s*(.*?)\s*$/,
+			continueRe = /^\s*(.*?)\s*$/;
 		
 		cells.shift(); //remove 'wifi scan completed'
 	
 		cells.forEach(function (cell) {
 		
 			currentWiFi = {};
-			console.log('--------------');
-			cell.split("\n").forEach(function(parameter) {
-				console.log('>>>', parameter);
+			
+			var parameters = cell.split("\n");
+			parameters.pop();
+			
+			parameters.forEach(function(parameter) {
+				var match = parameter.match(parameterRe);
+				if (match) {
+					lastParameter = match[1];
+					currentWiFi[lastParameter] = match[3];
+				} else {
+					var spaceMatch = parameter.match(continueRe);
+					currentWiFi[lastParameter] += spaceMatch && spaceMatch[1] || parameter;
+				}
 			});
 			
-//				Cell 01 - Address: 58:BC:27:5C:D4:E0
-//                    ESSID:"<hidden>"
-//                    Protocol:IEEE 802.11bgn
-//                    Mode:Master
-//                    Frequency:2.412 GHz (Channel 1)
-//                    Encryption key:on
-//                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 6 Mb/s; 9 Mb/s
-//                              11 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s; 36 Mb/s
-//                              48 Mb/s; 54 Mb/s
-//                    Extra:rsn_ie=30180100000fac020200000fac02000fac040100000fac022800
-//                    IE: IEEE 802.11i/WPA2 Version 1
-//                        Group Cipher : TKIP
-//                        Pairwise Ciphers (2) : TKIP CCMP
-//                        Authentication Suites (1) : PSK
-//                    Signal level=62/100
-			
+			wifiList.push(currentWiFi);
 		});
 		
 		self.completed ({
 			success: true,
-			total: 0,
+			total: wifiList.length,
 			err: null,
-			data: []
+			data: wifiList
 		});
 	}
 });
