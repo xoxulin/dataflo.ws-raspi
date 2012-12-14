@@ -43,17 +43,17 @@ util.extend (wifiScanTask.prototype, {
 	
 	},
 	
-	parseIWList: function() {
+	parseIWList: function(output) {
 		
 		var self = this;
 		
 		var docs = [],
 			currentWiFi = {},
-			records = stdout.split ("\n");
+			records = output.split ("Cell");
 		
-		console.log();
+		console.log(output, records.length);
 	
-		records.map (function (item) {
+		records.forEach(function (item) {
 		
 			console.log(item);
 			
