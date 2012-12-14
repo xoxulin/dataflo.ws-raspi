@@ -51,7 +51,7 @@ util.extend (wifiScanTask.prototype, {
 			currentWiFi,
 			lastParameter
 			cells = output.split (/Cell \d+ - /),
-			parameterRe = /^\s*([^:=]+)(:|=)\s*(.*?)\s*$/,
+			parameterRe = /^\s*([^:=]+?)\s*(:|=)\s*(.*?)\s*$/,
 			continueRe = /^\s*(.*?)\s*$/;
 		
 		cells.shift(); //remove 'wifi scan completed'
@@ -75,7 +75,7 @@ util.extend (wifiScanTask.prototype, {
 				}
 			});
 			
-			currentWiFi.essid = currentWiFi.essid.replace(/"|<|>/g,'');
+			currentWiFi.essid = currentWiFi.essid.replace(/"|<|>|\(|\)/g,'');
 			var signal = currentWiFi.signal_level.split('/');
 			currentWiFi.signal_level = parseInt(signal[0])/parseInt(signal[1]);
 				
