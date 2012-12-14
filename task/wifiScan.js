@@ -51,11 +51,11 @@ util.extend (wifiScanTask.prototype, {
 			currentWiFi,
 			lastParameter
 			cells = output.split (/Cell \d+ - /),
-			parameterRe = /^\s*([^:=])(:|=)\s*(.*?)\s*$/,
+			parameterRe = /^\s*([^:=]+)(:|=)\s*(.*?)\s*$/,
 			continueRe = /^\s*(.*?)\s*$/;
 		
 		cells.shift(); //remove 'wifi scan completed'
-	
+		console.log('CELLS:', cells.length)
 		cells.forEach(function (cell) {
 		
 			currentWiFi = {};
@@ -65,6 +65,7 @@ util.extend (wifiScanTask.prototype, {
 			
 			parameters.forEach(function(parameter) {
 				var match = parameter.match(parameterRe);
+				
 				if (match) {
 					lastParameter = match[1];
 					currentWiFi[lastParameter] = match[3];
