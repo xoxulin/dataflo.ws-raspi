@@ -57,7 +57,7 @@ util.extend (wifiScanTask.prototype, {
 		
 			currentWiFi = {};
 			// /^[^:]+:/
-			cell.split("\n\n").forEach(function(parameter) {
+			cell.split("\n").forEach(function(parameter) {
 				console.log('>>>', parameter);
 			});
 			
