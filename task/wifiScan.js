@@ -47,15 +47,19 @@ util.extend (wifiScanTask.prototype, {
 		
 		var self = this;
 		
-		var docs = [],
-			currentWiFi = {},
-			records = output.split ("Cell");
+		var result = [],
+			currentWiFi,
+			cells = output.split (/Cell \d+ - /);
 		
-		console.log(output, records.length);
+		cells.shift(); //remove 'wifi scan completed'
 	
-		records.forEach(function (item) {
+		cells.forEach(function (cell) {
 		
-			console.log(item);
+			currentWiFi = {};
+			// /^[^:]+:/
+			cell.split("\n\n").forEach(function(parameter) {
+				console.log('>>>', parameter);
+			});
 			
 //				Cell 01 - Address: 58:BC:27:5C:D4:E0
 //                    ESSID:"<hidden>"
