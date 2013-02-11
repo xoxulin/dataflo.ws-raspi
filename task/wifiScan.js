@@ -1,5 +1,5 @@
 var EventEmitter = require ('events').EventEmitter,
-	task         = require ('task/base'),
+	task         = require ('dataflo.ws/task/base'),
 	util         = require ('util'),
 	spawn        = require('child_process').spawn;
 
