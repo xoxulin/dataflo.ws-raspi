@@ -201,7 +201,7 @@ wmr200.prototype.processData = function (byte) {
 			}
 			
 			if (data === false) {
-				self.emitter.emit('error', 'Read error at '+self.currentHeader.toString(16)+ ' header');
+				console.log('WMR Read error at '+self.currentHeader.toString(16)+ ' header');
 				self.reset();
 			} else {
 				self.applyData(data);
