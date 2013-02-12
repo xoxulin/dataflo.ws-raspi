@@ -151,10 +151,20 @@ wmr200.prototype.processData = function (byte) {
 	
 		// if header no buffer
 		
-		self.currentBuffer = new Buffer(byte);
-		self.currentBufferPosition = 0;
-		self.currentBuffer.writeUInt8(self.currentHeader, self.currentBufferPosition++);
-		self.currentBuffer.writeUInt8(byte, self.currentBufferPosition++);
+		if (byte == 0) {
+		
+			self.currentHeader = null
+			self.currentBuffer = null;
+			self.currentBufferPosition = 0;
+		
+		} else {
+			
+			self.currentBuffer = new Buffer(byte);
+			self.currentBufferPosition = 0;
+			self.currentBuffer.writeUInt8(self.currentHeader, self.currentBufferPosition++);
+			self.currentBuffer.writeUInt8(byte, self.currentBufferPosition++);
+			
+		}
 		
 	} else if (self.currentHeader !== null && self.currentBuffer) {
 		
