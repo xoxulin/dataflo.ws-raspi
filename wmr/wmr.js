@@ -117,16 +117,9 @@ wmr200.prototype.read = function(error, data) {
 		
 		self.errorProcess(error);
 		
-	} else if (data) {
-	
-		var length = data.shift(),
-			values = data.slice(0, length);
+	} else if (data[0] == 1) {
 		
-		values.forEach(function(d) {
-		
-			self.processData(d);
-			
-		});
+		self.processData(data[1]);
 	
 	}
 	
