@@ -117,7 +117,7 @@ wmr200.prototype.read = function(error, data) {
 		
 		self.errorProcess(error);
 		
-	} else if (data[0] == 1 && data[2] == 0) {
+	} else if (data[0] == 1) {
 		
 		self.processData(data[1]);
 	
@@ -206,7 +206,6 @@ wmr200.prototype.processData = function (byte) {
 			
 			if (data === false) {
 				console.log('WMR Read error at '+self.currentHeader.toString(16)+ ' header');
-				self.reset();
 			} else {
 				self.applyState(data);
 			}
