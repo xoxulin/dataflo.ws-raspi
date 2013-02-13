@@ -26,13 +26,13 @@ var VID_OREGON = 0x0fde,
 	BATERY_STATUS_DATA			= 0xD9;
 
 	ALLOWED_HEADERS = {
-		0xD2: true,
-		0xD3: true,
-		0xD4: true,
-		0xD5: true,
-		0xD6: true,
-		0xD7: true,
-		0xD9: true
+		0xD2: [49, 112],
+		0xD3: [16, 16],
+		0xD4: [22, 22],
+		0xD5: [10, 10],
+		0xD6: [13, 13],
+		0xD7: [16, 16],
+		0xD9: [8, 8]
 	},
 
 	excludedKeys = {
@@ -113,8 +113,6 @@ wmr200.prototype.read = function(error, data) {
 		
 	var self = this;
 	
-	console.log(data);
-			
 	if (error || !self.heartBeat) {
 		
 		self.errorProcess(error);
@@ -143,21 +141,25 @@ wmr200.prototype.processData = function (byte) {
 		
 		// if header not allowed then ignore
 		
-		if (!ALLOWED_HEADERS[byte]) return;
+		var allowed = ALLOWED_HEADERS[byte];
+		
+		if (!allowed) return;
 		
 		// if no header no buffer
 		
 		self.currentHeader = byte;
+		self.currentLength = allowed;
 		
 	} else if (self.currentHeader !== null && !self.currentBuffer) {
 	
 		// if header no buffer
 		
-		if (byte == 0) {
+		if (byte < self.currentLength[0] || byte > self.currentLength[1]) {
 		
 			self.currentHeader = null
 			self.currentBuffer = null;
 			self.currentBufferPosition = 0;
+			self.currentLength = null;
 		
 		} else {
 			
@@ -206,12 +208,13 @@ wmr200.prototype.processData = function (byte) {
 				console.log('WMR Read error at '+self.currentHeader.toString(16)+ ' header');
 				self.reset();
 			} else {
-				self.applyData(data);
+				self.applyState(data);
 			}
 			
 			self.currentHeader = null;
 			self.currentBuffer = null;
 			self.currentBufferPosition = 0;
+			self.currentLength = null;
 			
 		}
 		
@@ -609,7 +612,7 @@ wmr200.prototype.getCheckSumValid = function(buffer) {
 	
 };
 
-wmr200.prototype.applyData = function(data) {
+wmr200.prototype.applyState = function(data) {
 	
 	var self = this,
 		change = false,
