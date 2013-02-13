@@ -112,12 +112,14 @@ wmr200.prototype.reset = function() {
 wmr200.prototype.read = function(error, data) {
 		
 	var self = this;
+	
+	console.log(data);
 			
 	if (error || !self.heartBeat) {
 		
 		self.errorProcess(error);
 		
-	} else if (data[0] == 1) {
+	} else if (data[0] == 1 && data[2] == 0) {
 		
 		self.processData(data[1]);
 	
