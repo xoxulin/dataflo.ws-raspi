@@ -129,7 +129,7 @@ wmr200.prototype.read = function(error, data) {
 	
 wmr200.prototype.errorProcess = function(error) {
 	
-	self.emitter.emit('error', error);
+	this.emitter.emit('error', error);
 	
 };
 
