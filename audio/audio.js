@@ -33,7 +33,7 @@ var audio = module.exports = function() {
 	
 	self.reader.on('data', function(data) {
 
-		self.buffers = self.buffers.push(data);
+		self.buffers.push(data);
 		self.totalLength += data.length;
 
 	});
