@@ -3,25 +3,51 @@ var EventEmitter = require ('events').EventEmitter,
 	spawn        = require ('child_process').spawn,
 	wav 		 = require ('wav');
 
-// - - - - - - -
+// - - - - - - - const
 
 var COMMAND = 'arecord',
 	ARGS = ['-f', 'S16_LE', '-r', '16000', '-D', 'hw:1,0', '-d'];
+
+// - - - microphone constants
+
+var DC = 254.96,
+	minDB = 30,
+	maxDB = 120;
+
+var rangeInt16 = 1 << 15;
 
 // - - - - - - -
 
 var audio = module.exports = function() {
 	
-	this.reader = new wav.Reader();
-	this.reader.on('format', function(format) {
+	var self = this;
+	
+	self.buffers = [];
+	self.totalLength = 0;
+	self.reader = new wav.Reader();
+	self.reader.on('format', function(format) {
 
 		console.log('<<<<<< format', format);
+
+	});
+	
+	self.reader.on('data', function(data) {
+
+		self.buffers = self.buffers.push(data);
+		self.totalLength += data.length;
 
 	});
 
 }
 
 util.inherits (audio, EventEmitter);
+
+audio.prototype.clear = function(duration) {
+	
+	if (this.forkRunning) return;
+	this.buffers.splice(0);
+	
+}
 
 audio.prototype.record = function(duration) {
 	
@@ -30,6 +56,8 @@ audio.prototype.record = function(duration) {
 	if (self.forkRunning) return;
 	
 	self.forkRunning = true;
+	
+	self.clear();
 	
 	var fork  = spawn(COMMAND, ARGS.concat([duration])),
 		error = '';
@@ -54,30 +82,29 @@ audio.prototype.record = function(duration) {
 
 audio.prototype.measure = function(duration) {
 	
-	var position = 0,
+	var self = this,
+		median = 0,
 		abssum = 0,
-		count = 0,
-		dc = 255,
-		val,
-		calibration = 30,
-		min, max, avg,
-		rangeInt16 = 1 << 15;
+		count = 0;
 	
-	while (position < data.length) {
-		val = data.readInt16LE(position);
-		abssum += Math.abs(val-dc);
-		position += 2;
-		count++;
-	}
+	buffers.forEach(function(buffer) {
 	
-	abssum /= count*rangeInt16;
-	abssum = 120 + calibration * Math.log(abssum)/Math.LN10;
+		var position = 0,
+			val;
+		
+		while (position < buffer.length) {
+			val = data.readInt16LE(position)-DC;
+			abssum += Math.abs(val);
+			position += 2;
+			count++;
+		}
 	
-	console.log('Signal Level', abssum.toFixed(2), 'dB');
+	});
 	
-	return {
-		min: min,
-		max: max,
-		avg: avg
-	};
+	median = abssum / (count*rangeInt16);
+	median = maxDB + minDB * Math.log(median)/Math.LN10;
+	
+	console.log('Signal Level', median.toFixed(2), 'dB');
+	
+	return median;
 }
