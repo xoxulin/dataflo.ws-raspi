@@ -94,7 +94,7 @@ audio.prototype.measure = function() {
 			val;
 		
 		while (position < buffer.length) {
-			val = data.readInt16LE(position)-DC;
+			val = buffer.readInt16LE(position)-DC;
 			abssum += Math.abs(val);
 			position += 2;
 			count++;
