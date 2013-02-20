@@ -88,7 +88,7 @@ audio.prototype.measure = function() {
 		abssum = 0,
 		count = 0;
 	
-	buffers.forEach(function(buffer) {
+	self.buffers.forEach(function(buffer) {
 	
 		var position = 0,
 			val;
