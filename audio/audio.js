@@ -27,7 +27,7 @@ var audio = module.exports = function() {
 	self.reader = new wav.Reader();
 	self.reader.on('format', function(format) {
 
-		console.log('<<<<<< format', format);
+		self.emit('format', format);
 
 	});
 	
@@ -52,6 +52,7 @@ audio.prototype.clear = function(duration) {
 	
 	if (this.forkRunning) return;
 	this.buffers.splice(0);
+	self.totalLength = 0;
 	
 }
 
