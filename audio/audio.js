@@ -72,6 +72,7 @@ audio.prototype.record = function(duration) {
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
+		self.emit('end');
 		
 		console.log('<<<<< exit with code =', code);
 		if (error) console.log('<<<<< error', error);
