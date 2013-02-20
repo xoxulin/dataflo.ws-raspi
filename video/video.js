@@ -1,0 +1,1 @@
+// gst-launch-0.10 -e v4l2src ! ffmpegcolorspace ! timeoverlay halign=right valign=bottom ! clockoverlay halign=left valign=bottom time-format="%Y/%m/%d %H:%M:%S" ! pngenc snapshot=true ! filesink location="htdocs/frame_shot.png"
