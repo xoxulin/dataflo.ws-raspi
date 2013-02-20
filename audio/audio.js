@@ -80,7 +80,7 @@ audio.prototype.record = function(duration) {
 	
 }
 
-audio.prototype.measure = function(duration) {
+audio.prototype.measure = function() {
 	
 	var self = this,
 		median = 0,
