@@ -37,6 +37,12 @@ var audio = module.exports = function() {
 		self.totalLength += data.length;
 
 	});
+	
+	self.reader.on('error', function(error) {
+
+		self.emit('error', error);
+
+	});
 
 }
 
@@ -74,14 +80,13 @@ audio.prototype.record = function(duration) {
 		self.forkRunning = false;
 		self.emit('end');
 		
-		console.log('<<<<< exit with code =', code);
-		if (error) console.log('<<<<< error', error);
+		if (code != 0) self.emit('error', error);
 
 	});
 	
 }
 
-audio.prototype.measure = function() {
+audio.prototype.measureLevel = function() {
 	
 	var self = this,
 		median = 0,
@@ -104,8 +109,6 @@ audio.prototype.measure = function() {
 	
 	median = abssum / (count*rangeInt16);
 	median = maxDB + minDB * Math.log(median)/Math.LN10;
-	
-	console.log('Signal Level', median.toFixed(2), 'dB');
 	
 	return median;
 }
