@@ -5,10 +5,12 @@ var EventEmitter = require ('events').EventEmitter,
 // - - - - - - - const
 
 var COMMAND = 'gst-launch-0.10',
-	SHOT_ARGS = ['-e v4l2src',
-			' ! ffmpegcolorspace',
-			' ! pngenc snapshot=true',
-			' ! filesink location='];
+	SHOT_ARGS = [
+		'-e', 'v4l2src',
+		'!', 'ffmpegcolorspace',
+		'!', 'pngenc', 'snapshot=true',
+		'!', 'filesink'
+	];
 
 // - - - - - - -
 
@@ -27,8 +29,7 @@ video.prototype.shot = function(location) {
 	if (self.forkRunning) return;
 	
 	self.forkRunning = true;
-	
-	var fork  = spawn(COMMAND, SHOT_ARGS.concat([location])),
+	var fork  = spawn(COMMAND, SHOT_ARGS.concat(['location=' + location])),
 		error = '';
 
 	fork.stderr.on('data', function (err) {
@@ -39,7 +40,7 @@ video.prototype.shot = function(location) {
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
-		
+		console.log(code);	
 		if (code != 0) self.emit('error', error);
 		else self.emit('end');
 	});
