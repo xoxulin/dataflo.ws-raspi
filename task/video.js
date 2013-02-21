@@ -25,7 +25,7 @@ videoTask.prototype.run = function () {
 	
 	});
 	
-	self.audioRecorder.on('error', function(error) {
+	self.videoRecorder.on('error', function(error) {
 		
 		self.failed(error);
 	
