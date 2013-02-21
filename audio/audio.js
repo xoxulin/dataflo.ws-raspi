@@ -52,7 +52,7 @@ audio.prototype.clear = function(duration) {
 	
 	if (this.forkRunning) return;
 	this.buffers.splice(0);
-	self.totalLength = 0;
+	this.totalLength = 0;
 	
 }
 
