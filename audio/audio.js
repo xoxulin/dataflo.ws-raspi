@@ -79,10 +79,9 @@ audio.prototype.record = function(duration) {
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
-		self.emit('end');
 		
 		if (code != 0) self.emit('error', error);
-
+		else self.emit('end');
 	});
 	
 }
