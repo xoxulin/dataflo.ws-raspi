@@ -46,3 +46,5 @@ video.prototype.shot = function(location) {
 	});
 	
 }
+
+//convert ~/Downloads/shot.png rose: -colorspace Gray -colors 64 -format %c histogram:info:- > ~/Desktop/test.txt

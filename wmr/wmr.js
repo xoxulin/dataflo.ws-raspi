@@ -50,6 +50,12 @@ var wmr200  = function () {
 	self.emitter = new EventEmitter();
 	self.emitter.state = self.state = {};
 	
+	self.init();
+	
+}
+
+wmr200.prototype.init = function () {
+	
 	var controllers = HID.devices(VID_OREGON, PID_METEO);
 	
 	if (controllers.length == 0) {
@@ -86,19 +92,39 @@ wmr200.prototype.start = function () {
 	
 	self.hid.read(self.boundRead);
 
-	self.heartBeat = setInterval(function() {
-		self.hid.write(HEART_BEAT_CMD);
-	}, 30000);
+	self.heartBeat = setInterval(self.tick.bind(self), 30000);
 
 };
+
+wmr200.prototype.tick = function() {
+	
+	var self = this;
+	
+	try {
+		self.hid.write(HEART_BEAT_CMD);
+	} catch (e) {
+		
+		self.stop();
+		self.hid.close();
+		// try to reconnect
+		self.init();
+	}
+	
+}
+
+wmr200.prototype.stop = function() {
+
+	if (!this.heartBeat) return;
+	
+	clearInterval(this.heartBeat);
+	
+}
 	
 wmr200.prototype.reset = function() {
 
 	var self = this;
 	
-	if (!self.heartBeat) return;
-	
-	clearInterval(self.heartBeat);
+	self.stop();
 	
 	console.log('WMR daemon reset');
 	
