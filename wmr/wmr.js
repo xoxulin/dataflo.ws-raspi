@@ -64,13 +64,13 @@ wmr200.prototype.init = function () {
 	
 	var path = controllers[0].path;
 	
-	self.hid = new HID.HID(path);
+	this.hid = new HID.HID(path);
 	
-	if (!self.hid) {
+	if (!this.hid) {
 		throw 'Meteo station WMR 200 is not available!';
 	}
 	
-	self.start();
+	this.start();
 	
 }
 
@@ -106,7 +106,9 @@ wmr200.prototype.tick = function() {
 		
 		self.stop();
 		self.hid.close();
+		
 		// try to reconnect
+		
 		self.init();
 	}
 	
