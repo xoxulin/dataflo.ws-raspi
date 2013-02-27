@@ -1,7 +1,8 @@
 var EventEmitter = require ('events').EventEmitter,
 	task         = require ('dataflo.ws/task/base'),
 	util         = require ('util'),
-	os	 	 	 = require('os');
+	os	 	 	 = require('os'),
+	spawn        = require('child_process').spawn;
 
 var COMMAND = 'cat',
 	ARGS = '/proc/cpuinfo';;
