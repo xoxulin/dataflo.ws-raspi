@@ -24,7 +24,7 @@ wmrTask.prototype.run = function () {
 				return state[key];
 			})
 		
-		this.completed({
+		self.completed({
 			data: data,
 			success: true,
 			err: null,
@@ -32,7 +32,7 @@ wmrTask.prototype.run = function () {
 		});
 	
 	} else {
-		this.completed(wmr.state);
+		self.completed(wmr.state);
 	}
 	
 };
