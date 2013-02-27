@@ -5,7 +5,7 @@ var EventEmitter = require ('events').EventEmitter,
 	spawn        = require('child_process').spawn;
 
 var COMMAND = 'cat',
-	ARGS = '/proc/cpuinfo';;
+	ARGS = ['/proc/cpuinfo'];
 
 var stateTask = module.exports = function (config) {
 
