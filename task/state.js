@@ -53,7 +53,8 @@ stateTask.prototype.getCPUInfo = function(callback) {
 		
 	}
 	
-	var cpuInfo = new io('/proc/cpuinfo');
+	var self = this,
+		cpuInfo = new io('/proc/cpuinfo');
 		
 	cpuInfo.readFile(function(error, data) {
 		
@@ -62,17 +63,33 @@ stateTask.prototype.getCPUInfo = function(callback) {
 			return;
 		}
 		
-		project.cpuInfo = self.parseInfoList(data);
+		project.cpuInfo = self.parseCPUInfoList(data);
 		callback(project.cpuInfo);
 		
 	});
 
 }
 
-stateTask.prototype.parseInfoList = function(data) {
+stateTask.prototype.parseCPUInfoList = function(data) {
 
-	console.log('<<< data', data.toString().spit('\n'));
+	data = data.toString().split('\n');
 	
-	return {};
+	var pair, key, value,
+		result = {};
+	
+	data.forEach(function(line) {
+		
+		if (line && line.replace(/\s+?/).length) {
+			
+			pair = line.split(/\t*?: /);
+			key = pair[0].replace(/\s+/,'_').toLowerCase();
+			value = pair[1].replace(/\s+$/,'');
+			
+			result[key] = value;
+		}
+		
+	});
+	
+	return result;
 
 }
