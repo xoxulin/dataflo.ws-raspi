@@ -2,10 +2,7 @@ var EventEmitter = require ('events').EventEmitter,
 	task         = require ('dataflo.ws/task/base'),
 	util         = require ('util'),
 	os	 	 	 = require('os'),
-	spawn        = require('child_process').spawn;
-
-var COMMAND = 'cat',
-	ARGS = ['/proc/cpuinfo'];
+	io        	 = require('dataflo.ws/io/easy');
 
 var stateTask = module.exports = function (config) {
 
@@ -48,7 +45,7 @@ stateTask.prototype.run = function () {
 
 stateTask.prototype.getCPUInfo = function(callback) {
 
-	if (this.cpuInfo) {
+	if (project.cpuInfo) {
 		
 		callback(project.cpuInfo);
 		
@@ -56,35 +53,25 @@ stateTask.prototype.getCPUInfo = function(callback) {
 		
 	}
 	
-	var self = this,
-		fork  = spawn(COMMAND, ARGS),
-		stderr = '',
-		stdout = '';
+	var cpuInfo = new io('/proc/cpuinfo');
 		
-	fork.stdout.on('data', function (data) {
+	cpuInfo.readFile(function(error, data) {
 		
-		stdout += data;
+		if (error) {
+			self.failed(error);
+			return;
+		}
 		
-	});
-
-	fork.stderr.on('data', function (data) {
-		
-		stderr += data;
-		
-	});
-
-	fork.on('exit', function (code) {
-
-		project.cpuInfo = self.parseInfoList(stdout);
+		project.cpuInfo = self.parseInfoList(data);
 		callback(project.cpuInfo);
-	
+		
 	});
 
 }
 
 stateTask.prototype.parseInfoList = function(data) {
 
-	console.log('<<< data', data);
+	console.log('<<< data', data.toString().spit('\n'));
 	
 	return {};
 
