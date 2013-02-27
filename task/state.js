@@ -20,7 +20,7 @@ stateTask.prototype.run = function () {
 		state = {
 			
 			node: {
-				pid: pocess.pid,
+				pid: process.pid,
 				memory: process.memoryUsage()
 			},
 			
