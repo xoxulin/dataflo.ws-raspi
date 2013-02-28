@@ -4,12 +4,13 @@ var EventEmitter = require ('events').EventEmitter,
 
 // - - - - - - - const
 
-var COMMAND = 'gst-launch-0.10',
+var COMMAND = 'fswebcam',
 	SHOT_ARGS = [
-		'-e', 'v4l2src',
-		'!', 'ffmpegcolorspace',
-		'!', 'pngenc', 'snapshot=true',
-		'!', 'filesink'
+		'--resolution', '1280x960',
+		'--fps', '30',
+		'--skip', '30',
+		'--jpeg', '95',
+		'--save'
 	];
 
 // - - - - - - -
@@ -29,7 +30,7 @@ video.prototype.shot = function(location) {
 	if (self.forkRunning) return;
 	
 	self.forkRunning = true;
-	var fork  = spawn(COMMAND, SHOT_ARGS.concat(['location=' + location])),
+	var fork  = spawn(COMMAND, SHOT_ARGS.concat([location])),
 		error = '';
 
 	fork.stderr.on('data', function (err) {
@@ -47,5 +48,6 @@ video.prototype.shot = function(location) {
 	
 }
 
+// fswebcam --resolution 1280x960 --fps 30  --skip 30 --jpeg 95 --save htdocs/video/shot.jpg
 // gst-launch-0.10 -e v4l2src ! ffmpegcolorspace ! pngenc snapshot=true ! filesink location=/path/
 //convert ~/Downloads/shot.png rose: -colorspace Gray -colors 64 -format %c histogram:info:- > ~/Desktop/test.txt
