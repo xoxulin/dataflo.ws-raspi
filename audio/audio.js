@@ -11,7 +11,7 @@ var COMMAND = 'arecord',
 // - - - microphone constants
 
 var DC = 254.96,
-	minDB = 30,
+	minDB = 60,
 	maxDB = 120,
 	deltaDB = maxDB - minDB;
 
