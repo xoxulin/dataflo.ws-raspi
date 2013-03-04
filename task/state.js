@@ -1,7 +1,8 @@
 var EventEmitter = require ('events').EventEmitter,
 	task         = require ('dataflo.ws/task/base'),
 	util         = require ('util'),
-	os	 	 	 = require('os')io = require('dataflo.ws/io/easy');
+	os	 	 	 = require('os'),
+	io = require('dataflo.ws/io/easy');
 
 // - - -
 
