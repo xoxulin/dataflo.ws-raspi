@@ -35,6 +35,8 @@ var VID_OREGON = 0x0fde,
 		0xD9: [8, 8]
 	},
 
+	RECONNECT_TIMEOUT = 5000;
+
 	excludedKeys = {
 		timestamp: true,
 		sensorNum: true,
@@ -84,16 +86,27 @@ wmr200.prototype.start = function () {
 	self.currentBuffer = null;
 	self.currentBufferPosition = 0;
 	
-	self.hid.write(RESET_CMD);
-	self.hid.write(HISTORY_CMD);
-	self.hid.write(HEART_BEAT_CMD);
-	
-	self.boundRead = self.read.bind(self);
-	
-	self.hid.read(self.boundRead);
+	try {
+		
+		self.hid.write(RESET_CMD);
+		self.hid.write(HISTORY_CMD);
+		self.hid.write(HEART_BEAT_CMD);
+		
+		self.boundRead = self.read.bind(self);
+		
+		self.hid.read(self.boundRead);
 
-	self.heartBeat = setInterval(self.tick.bind(self), 30000);
-
+		self.heartBeat = setInterval(self.tick.bind(self), 30000);
+	
+	} catch (e) {
+		
+		self.stop();
+		self.hid.close();
+		
+		// try to reconnect
+		
+		setTimeout(self.init.bind(self), RECONNECT_TIMEOUT);
+	}
 };
 
 wmr200.prototype.tick = function() {
@@ -130,10 +143,18 @@ wmr200.prototype.reset = function() {
 	
 	console.log('WMR daemon reset');
 	
-	self.hid.write(RESET_CMD);
-	self.hid.write(HISTORY_CLEAR_CMD);
-			
-	self.hid.read(self.boundRead);
+	try {
+	
+		self.hid.write(RESET_CMD);
+		self.hid.write(HISTORY_CLEAR_CMD);
+				
+		self.hid.read(self.boundRead);
+	
+	} catch (e) {
+		
+		console.log('error', e);
+		
+	}
 
 };
 	
