@@ -122,7 +122,7 @@ wmr200.prototype.tick = function() {
 		
 		// try to reconnect
 		
-		self.init();
+		setTimeout(self.init.bind(self), RECONNECT_TIMEOUT);
 	}
 	
 }
@@ -172,7 +172,15 @@ wmr200.prototype.read = function(error, data) {
 	
 	}
 	
-	self.hid.read(self.boundRead);
+	try {
+	
+		self.hid.read(self.boundRead);
+	
+	} catch (e) {
+		
+		setTimeout(self.init.bind(self), RECONNECT_TIMEOUT);
+		
+	}
 	
 };
 	
