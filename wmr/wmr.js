@@ -272,6 +272,8 @@ wmr200.prototype.processData = function (byte) {
 			
 			if (data === false) {
 				console.log('WMR Read error at '+self.currentHeader.toString(16)+ ' header');
+			} else if (self.currentHeader == HISTORIC_DATA) {
+				self.applyHistory(data);
 			} else {
 				self.applyState(data);
 			}
@@ -677,6 +679,16 @@ wmr200.prototype.getCheckSumValid = function(buffer) {
 	
 };
 
+wmr200.prototype.applyHistory = function(data) {
+	
+	var self = this;
+	
+	if (data.constructor !== Array) data = [data];
+	
+	self.emitter.emit('historystate', data);
+	
+};
+
 wmr200.prototype.applyState = function(data) {
 	
 	var self = this,
@@ -701,7 +713,7 @@ wmr200.prototype.applyState = function(data) {
 				
 			} else {
 				
-				oldValue  = self.state[item.type];
+				oldValue = self.state[item.type];
 				self.state[item.type] = item;
 				
 			}

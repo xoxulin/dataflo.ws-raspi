@@ -21,11 +21,35 @@ var wmri = module.exports = function (config) {
 	
 	self.wmr = wmr;
 	
+	self.wmr.on('historystate', self.historystate.bind(self));
 	self.wmr.on('statechange', self.statechange.bind(self));
 	
 }
 
 util.inherits (wmri, EventEmitter);
+
+wmri.prototype.historystate = function (data) {
+		
+	var self = this;
+	
+	data.forEach(function(item) {
+		
+		var type = item.type,
+			index = self.wfIndex.indexOf(type);
+		
+		if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
+		if (index == -1) return;
+	
+		var wfCfg = self.workflows[index],
+			wf = new workflow(wfCfg, {
+				value: item,
+				data: {}
+			});
+		
+		wf.run();
+	});
+
+};
 
 wmri.prototype.statechange = function (update) {
 		
