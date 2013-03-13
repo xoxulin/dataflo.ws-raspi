@@ -685,6 +685,32 @@ wmr200.prototype.applyHistory = function(data) {
 	
 	if (data.constructor !== Array) data = [data];
 	
+	data.forEach(function(item) {
+		
+		if (self.isChangedData(item)) {
+			
+			var oldValue;
+			
+			if (item.hasOwnProperty('sensorNum')) {
+				
+				oldValue = self.state[item.type][item.sensorNum];
+				
+				if (oldValue && oldValue.timestamp < item.timestamp) {
+					self.state[item.type][item.sensorNum] = item;
+				}
+				
+			} else {
+				
+				oldValue = self.state[item.type];
+				
+				if (oldValue && oldValue.timestamp < item.timestamp) {
+					self.state[item.type] = item;
+				}
+			}
+		}
+		
+	});
+	
 	self.emitter.emit('historystate', data);
 	
 };
