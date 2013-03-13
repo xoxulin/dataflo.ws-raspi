@@ -695,7 +695,7 @@ wmr200.prototype.applyHistory = function(data) {
 				
 				oldValue = self.state[item.type][item.sensorNum];
 				
-				if (oldValue && oldValue.timestamp < item.timestamp) {
+				if (!oldValue || oldValue.timestamp < item.timestamp) {
 					self.state[item.type][item.sensorNum] = item;
 				}
 				
@@ -703,7 +703,7 @@ wmr200.prototype.applyHistory = function(data) {
 				
 				oldValue = self.state[item.type];
 				
-				if (oldValue && oldValue.timestamp < item.timestamp) {
+				if (!oldValue || oldValue.timestamp < item.timestamp) {
 					self.state[item.type] = item;
 				}
 			}
