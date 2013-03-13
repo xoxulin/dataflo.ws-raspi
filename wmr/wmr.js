@@ -58,10 +58,13 @@ var wmr200  = function () {
 
 wmr200.prototype.init = function () {
 	
-	var controllers = HID.devices(VID_OREGON, PID_METEO);
+	var self = this,
+		controllers = HID.devices(VID_OREGON, PID_METEO);
 	
 	if (controllers.length == 0) {
-		throw 'Meteo station WMR 200 is not connected!';
+		console.log('Meteo station WMR 200 is not connected!');
+		setTimeout(self.init.bind(self), RECONNECT_TIMEOUT);
+		return;
 	}
 	
 	var path = controllers[0].path;
@@ -69,7 +72,9 @@ wmr200.prototype.init = function () {
 	this.hid = new HID.HID(path);
 	
 	if (!this.hid) {
-		throw 'Meteo station WMR 200 is not available!';
+		console.log('Meteo station WMR 200 is not available!');
+		setTimeout(self.init.bind(self), RECONNECT_TIMEOUT);
+		return;
 	}
 	
 	this.start();
@@ -161,7 +166,11 @@ wmr200.prototype.reset = function() {
 wmr200.prototype.read = function(error, data) {
 		
 	var self = this;
-	
+	if (error) {
+		setTimeout(self.init.bind(self), RECONNECT_TIMEOUT);
+		return;
+	}
+
 	if (error || !self.heartBeat) {
 		
 		self.errorProcess(error);
