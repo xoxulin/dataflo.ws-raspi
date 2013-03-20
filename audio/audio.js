@@ -67,9 +67,11 @@ audio.prototype.record = function(duration) {
 	
 	self.clear();
 	
-	var fork  = spawn(COMMAND, ARGS.concat([duration])),
+	var fork  = spawn(COMMAND, ARGS.concat([duration]), {detached: true}),
 		error = '';
-
+	
+	fork.unref();
+	
 	fork.stdout.pipe(self.reader);
 
 	fork.stderr.on('data', function (err) {

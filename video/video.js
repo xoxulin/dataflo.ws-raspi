@@ -30,9 +30,11 @@ video.prototype.shot = function(location) {
 	if (self.forkRunning) return;
 	
 	self.forkRunning = true;
-	var fork  = spawn(COMMAND, SHOT_ARGS.concat([location])),
+	var fork  = spawn(COMMAND, SHOT_ARGS.concat([location]), {detached: true}),
 		error = '';
-
+	
+	fork.unref();
+	
 	fork.stderr.on('data', function (err) {
 		
 		error += err;
