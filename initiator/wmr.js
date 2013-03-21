@@ -34,19 +34,8 @@ wmri.prototype.historystate = function (data) {
 	
 	data.forEach(function(item) {
 		
-		var type = item.type,
-			index = self.wfIndex.indexOf(type);
+		self.getAndRunWF(item);
 		
-		if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
-		if (index == -1) return;
-	
-		var wfCfg = self.workflows[index],
-			wf = new workflow(wfCfg, {
-				value: item,
-				data: {}
-			});
-		
-		wf.run();
 	});
 
 };
@@ -57,19 +46,25 @@ wmri.prototype.statechange = function (update) {
 	
 	update.data.forEach(function(item) {
 		
-		var type = item.newValue.type,
-			index = self.wfIndex.indexOf(type);
+		self.getAndRunWF(item.newValue);
 		
-		if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
-		if (index == -1) return;
-	
-		var wfCfg = self.workflows[index],
-			wf = new workflow(wfCfg, {
-				value: item.newValue,
-				data: {}
-			});
-		
-		wf.run();
 	});
 
 };
+
+wmri.prototype.getAndRunWF = function(value) {
+	
+	var index = self.wfIndex.indexOf(value.type);
+		
+	if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
+	if (index == -1) return;
+
+	var wfCfg = self.workflows[index],
+		wf = new workflow(wfCfg, {
+			value: value,
+			data: {}
+		});
+	
+	wf.run();
+	
+}
