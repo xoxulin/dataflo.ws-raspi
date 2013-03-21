@@ -54,7 +54,8 @@ wmri.prototype.statechange = function (update) {
 
 wmri.prototype.getAndRunWF = function(value) {
 	
-	var index = self.wfIndex.indexOf(value.type);
+	var self = this,
+		index = self.wfIndex.indexOf(value.type);
 		
 	if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
 	if (index == -1) return;
