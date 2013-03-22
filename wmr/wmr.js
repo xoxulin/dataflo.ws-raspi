@@ -35,7 +35,9 @@ var VID_OREGON = 0x0fde,
 		0xD9: [8, 8]
 	},
 
-	RECONNECT_TIMEOUT = 5000;
+	RECONNECT_TIMEOUT = 5000,
+
+	DEFAULT_IDS = [0],
 
 	excludedKeys = {
 		timestamp: true,
@@ -49,10 +51,19 @@ var wmr200  = function () {
 	
 	var self = this;
 	
+	self.ids = DEFAULT_IDS;
+	
 	self.emitter = new EventEmitter();
 	self.emitter.state = self.state = {};
-	
+	self.emitter.setOutdoorSensorIds = self.setOutdoorSensorIds.bind(self);
 	self.init();
+	
+}
+
+wmr200.prototype.setOutdoorSensorIds = function(ids) {
+
+	var self = this;
+	self.ids = DEFAULT_IDS.concat(ids);
 	
 }
 
@@ -324,25 +335,23 @@ wmr200.prototype.processHistory = function(buffer) {
 		
 		data.push.apply(data, indoorTemperatureHumidity);
 
-		rain. timestamp = wind.timestamp =
-		uvi.timestamp = pressure.timestamp =
-		indoorTemperatureHumidity[0].timestamp =
-		indoorTemperatureHumidity[1].timestamp = timestamp;
-		
-		
-		
-		// - - - external sensors
-		
-		for (var i = 0; i < externalSensorCount; i++) {
-		
-			var externalSensors = this._processTemperatureHumidity(buffer, 40 + 7*i);
+	rain. timestamp = wind.timestamp =
+	uvi.timestamp = pressure.timestamp =
+	indoorTemperatureHumidity[0].timestamp =
+	indoorTemperatureHumidity[1].timestamp = timestamp;
+	
+	// - - - external sensors
+	
+	for (var i = 0; i < externalSensorCount; i++) {
+	
+		var externalSensors = this._processTemperatureHumidity(buffer, 40 + 7*i);
 
-			externalSensors[0].timestamp =
-			externalSensors[1].timestamp = timestamp;
+		externalSensors[0].timestamp =
+		externalSensors[1].timestamp = timestamp;
 
-			data.push.apply(data, indoorTemperatureHumidity);
-		
-		}
+		data.push.apply(data, indoorTemperatureHumidity);
+	
+	}
 	
 	return data;
 };
@@ -725,6 +734,10 @@ wmr200.prototype.applyState = function(data) {
 	if (data.constructor !== Array) data = [data];
 	
 	data.forEach(function(item) {
+		
+		// if outdoorsensor
+		if (item.hasOwnProperty('sensorNum') &&
+			self.ids.indexOf(item.sensorNum) != -1) return;
 		
 		if (self.isChangedData(item)) {
 			

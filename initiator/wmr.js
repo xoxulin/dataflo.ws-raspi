@@ -21,6 +21,8 @@ var wmri = module.exports = function (config) {
 	
 	self.wmr = wmr;
 	
+	wmr.setOutdoorSensorIds(config.outdoorSensorIds);
+	
 	self.wmr.on('historystate', self.historystate.bind(self));
 	self.wmr.on('statechange', self.statechange.bind(self));
 	
@@ -59,7 +61,7 @@ wmri.prototype.getAndRunWF = function(value) {
 		
 	if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
 	if (index == -1) return;
-
+	
 	var wfCfg = self.workflows[index],
 		wf = new workflow(wfCfg, {
 			value: value,
