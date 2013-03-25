@@ -737,7 +737,7 @@ wmr200.prototype.applyState = function(data) {
 		
 		// if outdoorsensor
 		if (item.hasOwnProperty('sensorNum') &&
-			self.ids.indexOf(item.sensorNum) != -1) return;
+			self.ids.indexOf(item.sensorNum) == -1) return;
 		
 		if (self.isChangedData(item)) {
 			
