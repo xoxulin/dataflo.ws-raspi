@@ -23,11 +23,12 @@ deviceIDTask.prototype.run = function () {
 	}
 	
 	var cpuInfo = new io('/proc/cpuinfo');
-		
+	
 	cpuInfo.readFile(function(error, data) {
 		
 		if (error) {
-			throw error;
+			self.failed(error);
+			return;
 		}
 		
 		var deviceInfo = self._parseCPUInfoList(data);
