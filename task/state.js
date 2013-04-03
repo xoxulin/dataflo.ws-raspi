@@ -1,48 +1,6 @@
-var EventEmitter = require ('events').EventEmitter,
-	task         = require ('dataflo.ws/task/base'),
+var task         = require ('dataflo.ws/task/base'),
 	util         = require ('util'),
-	os	 	 	 = require('os'),
-	io = require('dataflo.ws/io/easy');
-
-// - - -
-
-var cpuInfo = new io('/proc/cpuinfo');
-		
-cpuInfo.readFile(function(error, data) {
-	
-	if (error) {
-		throw error;
-	}
-	
-	project.cpuInfo = parseCPUInfoList(data);
-		
-});
-
-function parseCPUInfoList(data) {
-
-	data = data.toString().split('\n');
-	
-	var pair, key, value,
-		result = {};
-	
-	data.forEach(function(line) {
-		
-		if (line && line.replace(/\s+?/).length) {
-			
-			pair = line.split(/\t*?: /);
-			key = pair[0].replace(/\s+/,'_').toLowerCase();
-			value = pair[1].replace(/\s+$/,'');
-			
-			result[key] = value;
-		}
-		
-	});
-	
-	return result;
-
-}
-
-// - - -
+	os	 	 	 = require('os');
 
 var stateTask = module.exports = function (config) {
 
@@ -57,9 +15,12 @@ stateTask.prototype.run = function () {
 	var self = this,
 		state = {
 			
+			deviceId: self.deviceId,
+			
 			node: {
 				pid: process.pid,
-				memory: process.memoryUsage()
+				memory: process.memoryUsage(),
+				uptime: process.uptime()
 			},
 			
 			os: {
@@ -68,11 +29,9 @@ stateTask.prototype.run = function () {
 					free: os.freemem()
 				},
 				loadAverages: os.loadavg(),
-				networkInterfaces: os.networkInterfaces(),
-				uptime: process.uptime()
+				networkInterfaces: os.networkInterfaces()
 				
-			},
-			cpuInfo: project.cpuInfo
+			}
 		};
 		
 	self.completed(state);

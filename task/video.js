@@ -1,5 +1,4 @@
-var EventEmitter = require ('events').EventEmitter,
-	task         = require ('dataflo.ws/task/base'),
+var task         = require ('dataflo.ws/task/base'),
 	util         = require ('util'),
 	video 	 	 = require('../video/video');
 

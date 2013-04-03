@@ -12,8 +12,7 @@ var COMMAND = 'arecord',
 
 var DC = 254.96,
 	minDB = 60,
-	maxDB = 120,
-	deltaDB = maxDB - minDB;
+	maxDB = 120;
 
 var rangeInt16 = 1 << 15;
 
@@ -111,7 +110,7 @@ audio.prototype.measureLevel = function() {
 	});
 	
 	median = abssum / (count*rangeInt16);
-	median = minDB + deltaDB * median;
+	median = Math.max(minDB, maxDB + minDB * Math.log(median)/Math.LN10);
 	
 	return median;
 }
