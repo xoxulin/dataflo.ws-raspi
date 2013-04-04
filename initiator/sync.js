@@ -27,49 +27,89 @@ var synci = module.exports = function (config) {
 	self.collectionWfsIndex = self.collectionWfs.map(function(wf) {
 		return wf.$collection;
 	});
+
+	// - - -
 	
+	self.getCredentials('trackerToServer', function(credentials) {
+		self.credentials = credentials;
+		self.ready();
+	});
+
 }
 
 util.inherits(synci, EventEmitter);
 
-synci.prototype.ping = function() {
-	
-	
-	
-}
-
-synci.prototype.generateDeviceCredentials = function(callback) {
+synci.prototype.getCredentials = function(id, cb) {
 
 	var self = this,
-		generateWf = self.callbackInitiator.process('generateDeviceCredentials', {});
+		getCredentialsWf = self.callbackInitiator.process('getCredentials', {
+			credentialsId: id
+		});
 	
-	generateWf.on('completed', function() {
-		callback(null, generateWf.data);
+	getCredentialsWf.on('completed', function(wf) {
+		var wfData = wf.data,
+			total = wfData.mongoResponse.total,
+			data = wfData.mongoResponse.data;
+		if (total) {
+			cb(data[0]);
+		} else {
+			self.generateAndSaveDeviceCredentials(id, cb);
+		}
 	});
 	
-	generateWf.on('failed', function(error) {
-		callback(error, null);
+	getCredentialsWf.on('failed', function(wf) {
+		console.log('error', wf.id);
+	});
+	
+	getCredentialsWf.run();
+}
+
+synci.prototype.generateAndSaveDeviceCredentials = function(id, cb) {
+
+	var self = this,
+		generateWf = self.callbackInitiator.process('generateAndSaveDeviceCredentials', {
+			credentialsId: id
+		});
+	
+	generateWf.on('completed', function(wf) {
+		var wfData = wf.data,
+			credentials = {
+				_id: wfData.mongoResponse._id,
+				login: wfData.login,
+				password: wfData.password
+			};
+		cb(credentials);
+	});
+	
+	generateWf.on('failed', function(wf) {
+		console.log('credentials generation and save failed', error);
 	});
 	
 	generateWf.run();
 	
 }
 
-synci.prototype.login = function () {
-		
-	var self = this;
-	
+synci.prototype.ready = function() {
+
+	console.log('READY', this.credentials);
+
+}
+
+//synci.prototype.login = function () {
+//		
+//	var self = this;
+//	
 //	var authParams = urlUtil.parse(self.authUrl),
 //		client = (authUrl.protocol == 'https') ? https : http;
 //		
-		//authParams.headers = {};
-	
-	
+//		//authParams.headers = {};
+//	
+//	
 //	client.request(authParams, function(res) {
 //	
 //	});
-
-};
+//
+//}
 
 /*sync.prototype.sync = function (data) {
 

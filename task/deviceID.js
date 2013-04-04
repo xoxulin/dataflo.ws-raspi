@@ -33,7 +33,7 @@ deviceIDTask.prototype.run = function () {
 		
 		var deviceInfo = self._parseCPUInfoList(data);
 			
-		DEVICE_ID = [deviceInfo.serial, deviceInfo.hardware, deviceInfo.revision].join('_');
+		DEVICE_ID = [deviceInfo.hardware, deviceInfo.revision, deviceInfo.serial].join('_');
 		
 		self.completed(DEVICE_ID);
 			
