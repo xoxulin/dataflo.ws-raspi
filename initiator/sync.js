@@ -6,13 +6,17 @@ var EventEmitter = require ('events').EventEmitter,
 	http		 = require('follow-redirects').http,
 	https		 = require('follow-redirects').https;
 
+/**
+ * Synchronization class between raspberry and http server
+ * start -> get credentials -> if no credentials -> generate credentials -> credentials ->
+ * get coockies -> if no coockies -> login -> coockies ->
+ * get data -> sync tick -> short timeout -> sync tick -> no data -> long timeout
+ *
+ */
+
 var synci = module.exports = function (config) {
 	
 	var self = this;
-	
-	// - - - login
-	
-	self.authUrl = config.authUrl;
 	
 	// - - - callback wfs
 	
@@ -94,6 +98,8 @@ synci.prototype.ready = function() {
 	console.log('READY', this.credentials);
 
 }
+
+
 
 //synci.prototype.login = function () {
 //		
