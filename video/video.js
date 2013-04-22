@@ -11,7 +11,7 @@ var COMMAND = 'fswebcam',
 		'--skip', '30',
 		'--jpeg', '95',
 		'--no-timestamp',
-		'--no-overlay',
+		'--no-banner',
 		'--save'
 	];
 
