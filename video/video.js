@@ -10,6 +10,7 @@ var COMMAND = 'fswebcam',
 		'--fps', '30',
 		'--skip', '30',
 		'--jpeg', '95',
+		'--no-timestamp',
 		'--save'
 	];
 
