@@ -51,7 +51,7 @@ var synci = module.exports = function (config) {
 
 util.inherits(synci, EventEmitter);
 
-sync.prototype.init = function() {
+synci.prototype.init = function() {
 	
 	var self = this;
 		
@@ -236,7 +236,7 @@ synci.prototype.ready = function() {
 //
 //}
 
-/*sync.prototype.sync = function (data) {
+/*synci.prototype.sync = function (data) {
 
 	var self = this;
 	
@@ -259,7 +259,7 @@ synci.prototype.ready = function() {
 
 };*/
 
-sync.prototype.processCallbackByToken = function(name, requires, callback) {
+synci.prototype.processCallbackByToken = function(name, requires, callback) {
 	
 	var self = this,
 		cbWf = self.callbackInitiator.process(name, requires);
