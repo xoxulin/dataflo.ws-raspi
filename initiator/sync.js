@@ -200,13 +200,11 @@ synci.prototype.login = function(cb) {
 		} else {
 			
 			var wfData = wf.data,
-				credentials = {
-					_id: wfData.mongoResponse._id,
-					login: wfData.login,
-					password: wfData.password
-				};
+				dataLogin = data.login;
 				
-			cb(cookies);
+			console.log('DATA.LOGIN', dataLogin);
+				
+			cb({});
 		}
 		
 	});
