@@ -19,15 +19,15 @@ var synci = module.exports = function (config) {
 	
 	var self = this;
 	
-	// timeouts and domain
+	// timeouts and syncDomain
 	
 	// ping: 1000
 	// shortTime: 1000
 	// longTime: 30000
 	self.timeOuts = config.timeOuts;
 	
-	// domain: example.com
-	self.domain = config.domain;
+	// syncDomain: example.com
+	self.syncDomain = config.syncDomain;
 	
 	// - - - callback wfs
 	
@@ -45,7 +45,9 @@ var synci = module.exports = function (config) {
 
 	// - - -
 	
-	self.init();
+	setTimeout(function() {
+		self.init();
+	}, 10000);
 
 }
 
@@ -101,7 +103,7 @@ synci.prototype.getCookies = function(cb) {
 	// expires=Fri, 19 Apr 2013 13:40:31 GMT
 	
 	self.processCallbackByToken('getCookies', {
-		domain: self.domain,
+		syncDomain: self.syncDomain,
 		timestamp: ~~(Date.now())
 	}, function(error, wf) {
 		
@@ -188,7 +190,7 @@ synci.prototype.login = function(cb) {
 	var self = this;
 	
 	self.processCallbackByToken('login', {
-		domain: self.domain,
+		syncDomain: self.syncDomain,
 		credentialsId: id,
 		auth: self.credentials.login+':'+self.credentials.password
 	}, function(error, wf) {
