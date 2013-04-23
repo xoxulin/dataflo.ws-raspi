@@ -8,15 +8,26 @@ var EventEmitter = require ('events').EventEmitter,
 
 /**
  * Synchronization class between raspberry and http server
- * start -> get credentials -> if no credentials -> generate credentials -> credentials ->
- * get coockies -> if no coockies -> login -> coockies ->
- * get data -> sync tick -> short timeout -> sync tick -> no data -> long timeout
+ * start -> get coockies -> if no coockies -> get credentials ->
+ * if no credentials -> generate credentials -> credentials -> login -> coockies ->
+ * sync tick -> get data -> remote resource post -> short timeout -> sync tick
+ * if remote resource not available -> pingOnce -> remote resource post
  *
  */
 
 var synci = module.exports = function (config) {
 	
 	var self = this;
+	
+	// timeouts and domain
+	
+	// ping: 1000
+	// shortTime: 1000
+	// longTime: 30000
+	self.timeOuts = config.timeOuts;
+	
+	// domain: example.com
+	self.domain = config.domain;
 	
 	// - - - callback wfs
 	
@@ -34,69 +45,179 @@ var synci = module.exports = function (config) {
 
 	// - - -
 	
-	self.getCredentials('trackerToServer', function(credentials) {
-		self.credentials = credentials;
-		self.ready();
-	});
+	self.init();
 
 }
 
 util.inherits(synci, EventEmitter);
 
-synci.prototype.getCredentials = function(id, cb) {
-
-	var self = this,
-		getCredentialsWf = self.callbackInitiator.process('getCredentials', {
-			credentialsId: id
-		});
+sync.prototype.init = function() {
 	
-	getCredentialsWf.on('completed', function(wf) {
-		var wfData = wf.data,
-			total = wfData.mongoResponse.total,
-			data = wfData.mongoResponse.data;
-		if (total) {
-			cb(data[0]);
+	var self = this;
+		
+	self.getCookies(function(cookies) {
+	
+		if (cookies) {
+			
+			self.coockies = cookies;
+			self.ready();
+			
 		} else {
-			self.generateAndSaveDeviceCredentials(id, cb);
+		
+			// login for set cookies
+	
+			self.getCredentials('trackerToServer', function(credentials) {
+				
+				if (credentials) {
+					self.credentials = credentials;
+					self.login(function(cookies) {
+						
+						if (cookies) {
+							self.coockies = cookies;
+							self.ready();
+						} else {
+							console.log('It was problem at login!');
+						}
+						
+					});
+				} else {
+					console.log('Credentials getting is problem!');
+				}
+				
+			});
+			
 		}
 	});
 	
-	getCredentialsWf.on('failed', function(wf) {
-		console.log('error', wf.id);
+}
+
+synci.prototype.getCookies = function(cb) {
+
+	var self = this;
+	
+	// stoken=MTI3LjAuMC4xOjU5MDI4LjEzZTE4Mzk1Mzc0LjYxNGYzMy4zTnphQzF5YzJFQUFBQUJJd0FBQVFFQQ;
+	// domain=terasolei.local;
+	// path=/;
+	// expires=Fri, 19 Apr 2013 13:40:31 GMT
+	
+	self.processCallbackByToken('getCookies', {
+		domain: self.domain,
+		timestamp: ~~(Date.now())
+	}, function(error, wf) {
+		
+		if (error) {
+			
+			cb(true, null);
+			
+		} else {
+			
+			var wfData = wf.data,
+				total = wfData.mongoResponse.total,
+				data = wfData.mongoResponse.data;
+			if (total) {
+				cb(data[0]);
+			} else {
+				cb(null);
+			}
+			
+		}
+		
 	});
 	
-	getCredentialsWf.run();
+}
+
+synci.prototype.getCredentials = function(id, cb) {
+
+	var self = this;
+	
+	self.processCallbackByToken('getCredentials', {
+		credentialsId: id
+	}, function(error, wf) {
+		
+		if (error) {
+			
+			cb(null);
+			
+		} else {
+			
+			var wfData = wf.data,
+				total = wfData.mongoResponse.total,
+				data = wfData.mongoResponse.data;
+			if (total) {
+				cb(data[0]);
+			} else {
+				self.generateAndSaveDeviceCredentials(id, cb);
+			}
+			
+		}
+		
+	});
+	
 }
 
 synci.prototype.generateAndSaveDeviceCredentials = function(id, cb) {
 
-	var self = this,
-		generateWf = self.callbackInitiator.process('generateAndSaveDeviceCredentials', {
-			credentialsId: id
-		});
+	var self = this;
 	
-	generateWf.on('completed', function(wf) {
-		var wfData = wf.data,
-			credentials = {
-				_id: wfData.mongoResponse._id,
-				login: wfData.login,
-				password: wfData.password
-			};
-		cb(credentials);
+	self.processCallbackByToken('generateAndSaveDeviceCredentials', {
+		credentialsId: id
+	}, function(error, wf) {
+		
+		if (error) {
+			
+			cb(null);
+			
+		} else {
+			
+			var wfData = wf.data,
+				credentials = {
+					_id: wfData.mongoResponse._id,
+					login: wfData.login,
+					password: wfData.password
+				};
+				
+			cb(credentials);
+		}
+		
 	});
 	
-	generateWf.on('failed', function(wf) {
-		console.log('credentials generation and save failed', error);
-	});
+}
+
+synci.prototype.login = function(cb) {
+
+	var self = this;
 	
-	generateWf.run();
+	self.processCallbackByToken('login', {
+		domain: self.domain,
+		credentialsId: id,
+		auth: 
+	}, function(error, wf) {
+		
+		if (error) {
+			
+			cb(null);
+			
+		} else {
+			
+			var wfData = wf.data,
+				credentials = {
+					_id: wfData.mongoResponse._id,
+					login: wfData.login,
+					password: wfData.password
+				};
+				
+			cb(cookies);
+		}
+		
+	});
 	
 }
 
 synci.prototype.ready = function() {
-
-	console.log('READY', this.credentials);
-
+	
+	console.log('READY');
+	console.log('CREDENTIALS', this.credentials);
+	console.log('COOKIES', this.credentials);
 }
 
 
@@ -139,3 +260,20 @@ synci.prototype.ready = function() {
 	});
 
 };*/
+
+sync.prototype.processCallbackByToken = function(name, requires, callback) {
+	
+	var self = this,
+		cbWf = self.callbackInitiator.process(name, requires);
+	
+	cbWf.on('completed', function(wf) {
+		callback(null, wf);
+	});
+	
+	cbWf.on('failed', function(wf) {
+		callback(new Error('Workflow ' + name + '[' + wf.id + '] failed'), wf);
+	});
+	
+	cbWf.run();
+	
+}
