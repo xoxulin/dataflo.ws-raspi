@@ -189,7 +189,7 @@ synci.prototype.login = function(cb) {
 	
 	self.processCallbackByToken('login', {
 		syncDomain: self.syncDomain,
-		auth: self.credentials.login+':'+self.credentials.password
+		credentials: self.credentials
 	}, function(error, wf) {
 		
 		if (error) {
