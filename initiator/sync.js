@@ -45,9 +45,7 @@ var synci = module.exports = function (config) {
 
 	// - - -
 	
-	setTimeout(function() {
-		self.init();
-	}, 10000);
+	self.init();
 
 }
 
@@ -191,7 +189,6 @@ synci.prototype.login = function(cb) {
 	
 	self.processCallbackByToken('login', {
 		syncDomain: self.syncDomain,
-		credentialsId: id,
 		auth: self.credentials.login+':'+self.credentials.password
 	}, function(error, wf) {
 		
