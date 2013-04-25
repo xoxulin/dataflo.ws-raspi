@@ -198,8 +198,7 @@ synci.prototype.login = function(cb) {
 			
 		} else {
 			
-			var wfData = wf.data,
-				dataLogin = data.login;
+			var dataLogin = wf.data.login;
 				
 			console.log('DATA.LOGIN', dataLogin);
 				
