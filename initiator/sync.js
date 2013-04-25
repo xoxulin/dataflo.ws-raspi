@@ -112,10 +112,9 @@ synci.prototype.getCookies = function(cb) {
 		} else {
 			
 			var wfData = wf.data,
-				total = wfData.mongoResponse.total,
-				data = wfData.mongoResponse.data;
-			if (total) {
-				cb(data[0]);
+				cookies = wfData.cookies;
+			if (cookies) {
+				cb(cookies);
 			} else {
 				cb(null);
 			}
@@ -200,9 +199,7 @@ synci.prototype.login = function(cb) {
 			
 			var dataLogin = wf.data.login;
 				
-			console.log('DATA.LOGIN', dataLogin);
-				
-			cb({});
+			cb(wf.data.cookies.stoken);
 		}
 		
 	});
@@ -212,8 +209,7 @@ synci.prototype.login = function(cb) {
 synci.prototype.ready = function() {
 	
 	console.log('READY');
-	console.log('CREDENTIALS', this.credentials);
-	console.log('COOKIES', this.credentials);
+	console.log('COOKIES', this.cookies);
 }
 
 
