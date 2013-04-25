@@ -223,7 +223,9 @@ synci.prototype.sync = function(collection) {
 		collectionWf = self.collectionWfs[index];
 	
 	var wf = new workflow(collectionWf, {
-		cookies: self.cookies,
+		cookie: self.cookies,
+		limit: 10,
+		syncDomain: self.syncDomain,		
 		data: {}
 	});
 	
