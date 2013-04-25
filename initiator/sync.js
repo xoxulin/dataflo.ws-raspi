@@ -8,8 +8,8 @@ var EventEmitter = require ('events').EventEmitter,
 
 /**
  * Synchronization class between raspberry and http server
- * start -> get coockies -> if no coockies -> get credentials ->
- * if no credentials -> generate credentials -> credentials -> login -> coockies ->
+ * start -> get cookies -> if no cookies -> get credentials ->
+ * if no credentials -> generate credentials -> credentials -> login -> cookies ->
  * sync tick -> get data -> remote resource post -> short timeout -> sync tick
  * if remote resource not available -> pingOnce -> remote resource post
  *
@@ -59,7 +59,7 @@ synci.prototype.init = function() {
 	
 		if (cookies) {
 			
-			self.coockies = cookies;
+			self.cookies = cookies;
 			self.ready();
 			
 		} else {
@@ -73,7 +73,7 @@ synci.prototype.init = function() {
 					self.login(function(cookies) {
 						
 						if (cookies) {
-							self.coockies = cookies;
+							self.cookies = cookies;
 							self.ready();
 						} else {
 							console.log('It was problem at login!');
@@ -94,11 +94,6 @@ synci.prototype.init = function() {
 synci.prototype.getCookies = function(cb) {
 
 	var self = this;
-	
-	// stoken=MTI3LjAuMC4xOjU5MDI4LjEzZTE4Mzk1Mzc0LjYxNGYzMy4zTnphQzF5YzJFQUFBQUJJd0FBQVFFQQ;
-	// domain=terasolei.local;
-	// path=/;
-	// expires=Fri, 19 Apr 2013 13:40:31 GMT
 	
 	self.processCallbackByToken('getCookies', {
 		syncDomain: self.syncDomain,
@@ -208,50 +203,55 @@ synci.prototype.login = function(cb) {
 
 synci.prototype.ready = function() {
 	
-	console.log('READY');
-	console.log('COOKIES', this.cookies);
-}
-
-
-
-//synci.prototype.login = function () {
-//		
-//	var self = this;
-//	
-//	var authParams = urlUtil.parse(self.authUrl),
-//		client = (authUrl.protocol == 'https') ? https : http;
-//		
-//		//authParams.headers = {};
-//	
-//	
-//	client.request(authParams, function(res) {
-//	
-//	});
-//
-//}
-
-/*synci.prototype.sync = function (data) {
-
 	var self = this;
 	
-	data.forEach(function(item) {
+	Object(self.collectionWfsIndex).keys.forEach(function(collection) {
 		
-		var type = item.type,
-			index = self.wfIndex.indexOf(type);
+		console.log('[INFO] Start syncing:', collection);
+		self.sync(collection);
 		
-		if (index == -1) index = self.wfIndex.indexOf(DEFAULT_TRIGGER);
-		if (index == -1) return;
-	
-		var wfCfg = self.workflows[index],
-			wf = new workflow(wfCfg, {
-				value: item,
-				data: {}
-			});
-		
-		wf.run();
 	});
+	
+}
 
-};*/
+synci.prototype.sync = function(collection) {
+
+	//collectionWf.$collection
+	
+	var self = this,
+		index = self.collectionWfsIndex.indexOf(collection),
+		collectionWf = self.collectionWfs[index];
+	
+	var wf = new workflow(collectionWf, {
+		cookies: self.cookies,
+		data: {}
+	});
+	
+	wf.on('completed', function(wf) {
+		
+		console.log('[INFO] Sync success:', collection);
+		
+		setTimeout(function() {
+			self.sync(collection);
+		}, self.timeOuts.shortTime);
+		
+	});
+	
+	wf.on('failed', function(wf) {
+	
+		console.log('[INFO] Sync fail:', collection);
+		
+		setTimeout(function() {
+			self.sync(collection);
+		}, self.timeOuts.longTime);
+		
+	});
+		
+	wf.run();
+
+};
+
+/////////////////////////////////////////////////////////////////////////////
 
 synci.prototype.processCallbackByToken = function(name, requires, callback) {
 	
