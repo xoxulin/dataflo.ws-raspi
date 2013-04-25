@@ -205,7 +205,7 @@ synci.prototype.ready = function() {
 	
 	var self = this;
 	
-	Object(self.collectionWfsIndex).keys.forEach(function(collection) {
+	self.collectionWfsIndex.forEach(function(collection) {
 		
 		console.log('[INFO] Start syncing:', collection);
 		self.sync(collection);
