@@ -231,11 +231,23 @@ synci.prototype.sync = function(collection) {
 	
 	wf.on('completed', function(wf) {
 		
-		console.log('[INFO] Sync success:', collection);
+		if (wf.data.syncResponse && !wf.error) {
 		
-		setTimeout(function() {
-			self.sync(collection);
-		}, self.timeOuts.shortTime);
+			console.log('[INFO] Sync success:', collection);
+			
+			setTimeout(function() {
+				self.sync(collection);
+			}, self.timeOuts.shortTime);
+		
+		} else {
+			
+			console.log('[INFO] Sync fail:', collection);
+			
+			setTimeout(function() {
+				self.sync(collection);
+			}, self.timeOuts.longTime);
+		
+		}
 		
 	});
 	
