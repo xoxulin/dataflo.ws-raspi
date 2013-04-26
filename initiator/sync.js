@@ -241,7 +241,7 @@ synci.prototype.sync = function(collection) {
 		
 		} else {
 			
-			console.log('[INFO] Sync fail:', collection);
+			console.log('[ERROR] Sync fail:', collection);
 			
 			setTimeout(function() {
 				self.sync(collection);
@@ -253,7 +253,7 @@ synci.prototype.sync = function(collection) {
 	
 	wf.on('failed', function(wf) {
 	
-		console.log('[INFO] Sync fail:', collection);
+		console.log('[ERROR] Sync fail:', collection);
 		
 		setTimeout(function() {
 			self.sync(collection);
