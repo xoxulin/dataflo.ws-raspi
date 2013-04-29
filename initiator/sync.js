@@ -216,7 +216,7 @@ synci.prototype.updateCookie = function(rawCookies, cb) {
 
 	var self = this;
 	
-	self.processCallbackByToken('updateCookie', {
+	self.processCallbackByToken('updateCookies', {
 		cookie: rawCookies,
 		syncDomain: self.syncDomain
 	}, function(error, wf) {
@@ -309,14 +309,21 @@ synci.prototype.processCallbackByToken = function(name, requires, callback) {
 	var self = this,
 		cbWf = self.callbackInitiator.process(name, requires);
 	
-	cbWf.on('completed', function(wf) {
-		callback(null, wf);
-	});
+	if (cbWF) {
 	
-	cbWf.on('failed', function(wf) {
-		callback(new Error('Workflow ' + name + '[' + wf.id + '] failed'), wf);
-	});
+		cbWf.on('completed', function(wf) {
+			callback(null, wf);
+		});
+		
+		cbWf.on('failed', function(wf) {
+			callback(new Error('Workflow ' + name + '[' + wf.id + '] failed'), wf);
+		});
+		
+		cbWf.run();
 	
-	cbWf.run();
-	
+	} else {
+		
+		callback(new Error('Workflow ' + name + ' not found'), null);
+		
+	}
 }
