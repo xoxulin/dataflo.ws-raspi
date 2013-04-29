@@ -8,8 +8,8 @@ var EventEmitter = require ('events').EventEmitter,
 
 /**
  * Synchronization class between raspberry and http server
- * start -> get cookies -> if no cookies -> get credentials ->
- * if no credentials -> generate credentials -> credentials -> login -> cookies ->
+ * start -> get cookie -> if no cookie -> get credentials ->
+ * if no credentials -> generate credentials -> credentials -> login -> cookie ->
  * sync tick -> get data -> remote resource post -> short timeout -> sync tick
  * if remote resource not available -> pingOnce -> remote resource post
  *
@@ -55,16 +55,16 @@ synci.prototype.init = function() {
 	
 	var self = this;
 		
-	self.getCookies(function(cookies) {
+	self.getCookie(function(cookie) {
 	
-		if (cookies) {
+		if (cookie) {
 			
-			self.cookies = cookies;
+			self.cookie = cookie;
 			self.ready();
 			
 		} else {
 		
-			// login for set cookies
+			// login for set cookie
 	
 			self.getCredentials('trackerToServer', function(credentials) {
 				
@@ -74,12 +74,12 @@ synci.prototype.init = function() {
 						
 						if (loginData && loginData.headers && loginData.headers['set-cookie']) {
 							
-							var rawCookies = loginData.headers['set-cookie'];
+							var rawCookie = loginData.headers['set-cookie'];
 							
-							self.updateCookie(rawCookies, function(cookies) {
+							self.updateCookie(rawCookie, function(cookie) {
 								
-								if (cookies) {
-									self.cookies = cookies;
+								if (cookie) {
+									self.cookie = cookie;
 									self.ready();
 								}
 								
@@ -101,11 +101,11 @@ synci.prototype.init = function() {
 	
 }
 
-synci.prototype.getCookies = function(cb) {
+synci.prototype.getCookie = function(cb) {
 
 	var self = this;
 	
-	self.processCallbackByToken('getCookies', {
+	self.processCallbackByToken('getCookie', {
 		syncDomain: self.syncDomain,
 		path: '/',
 		timestamp: ~~(Date.now())
@@ -118,9 +118,9 @@ synci.prototype.getCookies = function(cb) {
 		} else {
 			
 			var wfData = wf.data,
-				cookies = wfData.cookies;
-			if (cookies) {
-				cb(cookies);
+				cookie = wfData.cookie;
+			if (cookie) {
+				cb(cookie);
 			} else {
 				cb(null);
 			}
@@ -212,12 +212,12 @@ synci.prototype.login = function(cb) {
 	
 }
 
-synci.prototype.updateCookie = function(rawCookies, cb) {
+synci.prototype.updateCookie = function(rawCookie, cb) {
 
 	var self = this;
 	
-	self.processCallbackByToken('updateCookies', {
-		cookie: rawCookies,
+	self.processCallbackByToken('updateCookie', {
+		cookie: rawCookie,
 		syncDomain: self.syncDomain
 	}, function(error, wf) {
 		
@@ -229,9 +229,9 @@ synci.prototype.updateCookie = function(rawCookies, cb) {
 			
 			var wfData = wf.data,
 				mongo = wfData.mongoResponse,
-				cookies = wfData.cookies;
+				cookie = wfData.cookie;
 				
-			cb(cookies);
+			cb(cookie);
 		}
 		
 	});
@@ -260,7 +260,7 @@ synci.prototype.sync = function(collection) {
 		collectionWf = self.collectionWfs[index];
 	
 	var wf = new workflow(collectionWf, {
-		cookie: self.cookies,
+		cookie: self.cookie,
 		limit: 10,
 		syncDomain: self.syncDomain,		
 		data: {}
