@@ -8,8 +8,8 @@ var EventEmitter = require ('events').EventEmitter,
 
 /**
  * Synchronization class between raspberry and http server
- * start -> get cookie -> if no cookie -> get credentials ->
- * if no credentials -> generate credentials -> credentials -> login -> cookie ->
+ * start -> get cookie -> if no cookie -> get credential ->
+ * if no credential -> generate credential -> credential -> login -> cookie ->
  * sync tick -> get data -> remote resource post -> short timeout -> sync tick
  * if remote resource not available -> pingOnce -> remote resource post
  *
@@ -66,10 +66,10 @@ synci.prototype.init = function() {
 		
 			// login for set cookie
 	
-			self.getCredentials('trackerToServer', function(credentials) {
+			self.getCredential('trackerToServer', function(credential) {
 				
-				if (credentials) {
-					self.credentials = credentials;
+				if (credential) {
+					self.credential = credential;
 					self.login(function(loginData) {
 						
 						if (loginData && loginData.headers && loginData.headers['set-cookie']) {
@@ -131,12 +131,12 @@ synci.prototype.getCookie = function(cb) {
 	
 }
 
-synci.prototype.getCredentials = function(id, cb) {
+synci.prototype.getCredential = function(id, cb) {
 
 	var self = this;
 	
-	self.processCallbackByToken('getCredentials', {
-		credentialsId: id
+	self.processCallbackByToken('getCredential', {
+		credentialId: id
 	}, function(error, wf) {
 		
 		if (error) {
@@ -165,7 +165,7 @@ synci.prototype.generateAndSaveDeviceCredentials = function(id, cb) {
 	var self = this;
 	
 	self.processCallbackByToken('generateAndSaveDeviceCredentials', {
-		credentialsId: id
+		credentialId: id
 	}, function(error, wf) {
 		
 		if (error) {
@@ -175,13 +175,13 @@ synci.prototype.generateAndSaveDeviceCredentials = function(id, cb) {
 		} else {
 			
 			var wfData = wf.data,
-				credentials = {
+				credential = {
 					_id: wfData.mongoResponse._id,
 					login: wfData.login,
 					password: wfData.password
 				};
 				
-			cb(credentials);
+			cb(credential);
 		}
 		
 	});
@@ -194,7 +194,7 @@ synci.prototype.login = function(cb) {
 	
 	self.processCallbackByToken('login', {
 		syncDomain: self.syncDomain,
-		credentials: self.credentials
+		credential: self.credential
 	}, function(error, wf) {
 		
 		if (error || wf.error) {
