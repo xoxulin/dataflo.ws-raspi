@@ -309,7 +309,7 @@ synci.prototype.processCallbackByToken = function(name, requires, callback) {
 	var self = this,
 		cbWf = self.callbackInitiator.process(name, requires);
 	
-	if (cbWF) {
+	if (cbWf) {
 	
 		cbWf.on('completed', function(wf) {
 			callback(null, wf);
