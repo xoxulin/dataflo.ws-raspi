@@ -70,14 +70,20 @@ synci.prototype.init = function() {
 				
 				if (credentials) {
 					self.credentials = credentials;
-					self.login(function(cookies) {
+					self.login(function(loginData) {
 						
-						if (cookies) {
-							self.cookies = cookies;
-							self.ready();
-						} else {
-							console.log('It was problem at login!');
-						}
+						var rawCookies = loginData.headers['set-cookie'];
+						
+						self.updateCookie(rawCookies, function(cookies) {
+							
+							if (cookies) {
+								self.cookies = cookies;
+								self.ready();
+							} else {
+								console.log('It was problem at login!');
+							}
+							
+						});
 						
 					});
 				} else {
@@ -97,6 +103,7 @@ synci.prototype.getCookies = function(cb) {
 	
 	self.processCallbackByToken('getCookies', {
 		syncDomain: self.syncDomain,
+		path: '/',
 		timestamp: ~~(Date.now())
 	}, function(error, wf) {
 		
@@ -186,7 +193,7 @@ synci.prototype.login = function(cb) {
 		credentials: self.credentials
 	}, function(error, wf) {
 		
-		if (error) {
+		if (error || wf.error) {
 			
 			cb(null);
 			
@@ -194,7 +201,33 @@ synci.prototype.login = function(cb) {
 			
 			var dataLogin = wf.data.login;
 				
-			cb(wf.data.cookies.stoken);
+			cb(dataLogin);
+		}
+		
+	});
+	
+}
+
+synci.prototype.updateCookie = function(rawCookies, cb) {
+
+	var self = this;
+	
+	self.processCallbackByToken('updateCookie', {
+		cookie: rawCookies,
+		syncDomain: self.syncDomain
+	}, function(error, wf) {
+		
+		if (error) {
+			
+			cb(null);
+			
+		} else {
+			
+			var wfData = wf.data,
+				mongo = wfData.mongoResponse,
+				cookies = wfData.cookies;
+				
+			cb(cookies);
 		}
 		
 	});
