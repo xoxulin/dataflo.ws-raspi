@@ -72,18 +72,22 @@ synci.prototype.init = function() {
 					self.credentials = credentials;
 					self.login(function(loginData) {
 						
-						var rawCookies = loginData.headers['set-cookie'];
+						if (loginData && loginData.headers && loginData.headers['set-cookie']) {
+							
+							var rawCookies = loginData.headers['set-cookie'];
+							
+							self.updateCookie(rawCookies, function(cookies) {
+								
+								if (cookies) {
+									self.cookies = cookies;
+									self.ready();
+								}
+								
+							});
 						
-						self.updateCookie(rawCookies, function(cookies) {
-							
-							if (cookies) {
-								self.cookies = cookies;
-								self.ready();
-							} else {
-								console.log('It was problem at login!');
-							}
-							
-						});
+						} else {
+							console.log('It was problem at login!');
+						}
 						
 					});
 				} else {
