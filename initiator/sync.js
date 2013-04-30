@@ -87,6 +87,10 @@ synci.prototype.init = function() {
 						
 						} else {
 							console.log('It was problem at login!');
+							
+							setTimeout(function() {
+								self.init();
+							}, self.timeOuts.longTime);
 						}
 						
 					});
@@ -193,6 +197,7 @@ synci.prototype.login = function(cb) {
 	var self = this;
 	
 	self.processCallbackByToken('login', {
+		timeout: self.timeOuts.shortTime,
 		syncDomain: self.syncDomain,
 		credential: self.credential
 	}, function(error, wf) {
