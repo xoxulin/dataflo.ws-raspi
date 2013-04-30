@@ -277,8 +277,8 @@ synci.prototype.sync = function(collection) {
 		
 			console.log('[INFO] Sync success:', collection);
 			
-			var responseData = wf.data.responseData,
-				rawCookie = responseData.headers['set-cookie'];
+			var syncResponse = wf.data.syncResponse,
+				rawCookie = syncResponse.headers['set-cookie'];
 			
 			self.afterSync(rawCookie, function() {
 				
