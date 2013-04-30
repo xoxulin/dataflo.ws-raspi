@@ -316,6 +316,8 @@ synci.prototype.sync = function(collection) {
 
 synci.prototype.afterSync = function(rawCookie, cb) {
 
+	var self = this;
+	
 	self.updateCookie(rawCookie, function(cookie) {
 								
 		if (cookie) {
