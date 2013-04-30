@@ -229,8 +229,8 @@ synci.prototype.updateCookie = function(rawCookie, cb) {
 			
 			var wfData = wf.data,
 				mongo = wfData.mongoResponse,
-				cookie = wfData.cookie;
-				
+				cookie = wfData.renderedCookie;
+			console.log('[COOKIE.LENGTH]:', mongo.total, cookie.length);
 			cb(cookie);
 		}
 		
