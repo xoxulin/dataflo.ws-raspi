@@ -272,9 +272,16 @@ synci.prototype.sync = function(collection) {
 		
 			console.log('[INFO] Sync success:', collection);
 			
-			setTimeout(function() {
-				self.sync(collection);
-			}, self.timeOuts.shortTime);
+			var responseData = wf.data.responseData,
+				rawCookie = responseData.headers['set-cookie'];
+			
+			self.afterSync(rawCookie, function() {
+				
+				setTimeout(function() {
+					self.sync(collection);
+				}, self.timeOuts.shortTime);
+				
+			});
 		
 		} else {
 			
@@ -301,6 +308,20 @@ synci.prototype.sync = function(collection) {
 	wf.run();
 
 };
+
+synci.prototype.afterSync = function(rawCookie, cb) {
+
+	self.updateCookie(rawCookie, function(cookie) {
+								
+		if (cookie) {
+			self.cookie = cookie;
+		}
+		
+		cb();
+		
+	});
+
+}
 
 /////////////////////////////////////////////////////////////////////////////
 
