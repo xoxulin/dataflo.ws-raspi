@@ -15,8 +15,6 @@ stateTask.prototype.run = function () {
 	var self = this,
 		state = {
 			
-			deviceId: self.deviceId,
-			
 			node: {
 				pid: process.pid,
 				memory: process.memoryUsage(),

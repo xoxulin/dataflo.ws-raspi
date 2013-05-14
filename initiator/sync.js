@@ -135,6 +135,13 @@ synci.prototype.getCookie = function(cb) {
 	
 }
 
+synci.prototype.cookieIsFresh = function() {
+	
+	var self = this;
+	self.cookie = cookie;
+	
+}
+
 synci.prototype.getCredential = function(id, cb) {
 
 	var self = this;
