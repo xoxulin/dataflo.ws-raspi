@@ -52,7 +52,7 @@ util.extend (wifiScanTask.prototype, {
 			continueRe = /^\s*(.*?)\s*$/;
 		
 		cells.shift(); //remove 'wifi scan completed'
-		console.log('CELLS:', cells.length)
+		if (self.verbose) self.emit('log', 'CELLS accepted: ' + cells.length);
 		cells.forEach(function (cell) {
 		
 			currentWiFi = {};
