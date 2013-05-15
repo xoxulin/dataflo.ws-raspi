@@ -73,7 +73,7 @@ util.extend (wifiScanTask.prototype, {
 			});
 			
 			currentWiFi.essid = currentWiFi.essid.replace(/"|<|>|\(|\)/g,'');
-			var signal = currentWiFi.signal_level.split('/');
+			var signal = currentWiFi.signal_level && currentWiFi.signal_level.split('/') || ['0', '100'];
 			currentWiFi.signal_level = parseInt(signal[0])/parseInt(signal[1]);
 				
 			wifiList.push(currentWiFi);
