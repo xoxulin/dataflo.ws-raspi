@@ -64,7 +64,7 @@ util.extend (wifiScanTask.prototype, {
 				var match = parameter.match(parameterRe);
 				
 				if (match) {
-					lastParameter = match[1].toLowerCase().replace(/\s+/g,'_');
+					lastParameter = match[1].toLowerCase().replace(/\(\d*\)/g,'').replace(/\s+/g,'_');
 					currentWiFi[lastParameter] = match[3];
 				} else {
 					var spaceMatch = parameter.match(continueRe);
@@ -72,7 +72,9 @@ util.extend (wifiScanTask.prototype, {
 				}
 			});
 			
-			currentWiFi.essid = currentWiFi.essid.replace(/"|<|>|\(|\)/g,'');
+			currentWiFi.essid = currentWiFi.essid.replace(/["<>\(\)]/g,'');
+			currentWiFi.address = currentWiFi.essid.replace(/:/g,'').toLowerCase();
+			
 			var signal = currentWiFi.signal_level && currentWiFi.signal_level.split('/') || ['0', '100'];
 			currentWiFi.signal_level = Math.round(parseInt(signal[0])/parseInt(signal[1])*100);
 				
