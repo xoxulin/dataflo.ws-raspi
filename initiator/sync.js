@@ -268,8 +268,15 @@ synci.prototype.sync = function(collection) {
 	//collectionWf.$collection
 	
 	var self = this,
-		index = self.collectionWfsIndex.indexOf(collection),
-		collectionWf = self.collectionWfs[index];
+		index = self.collectionWfsIndex.indexOf(collection);
+		
+	if (index != -1) {
+		var collectionWf = self.collectionWfs[index];
+			syncTime = collectionWf.timeOut.sync;
+			errorTime = collectionWf.timeOut.error;
+	} else {
+		return;
+	}
 	
 	var wf = new workflow(collectionWf, {
 		cookie: self.cookie,
@@ -291,7 +298,7 @@ synci.prototype.sync = function(collection) {
 				
 				setTimeout(function() {
 					self.sync(collection);
-				}, self.timeOuts.shortTime);
+				}, syncTime);
 				
 			});
 		
@@ -301,7 +308,7 @@ synci.prototype.sync = function(collection) {
 			
 			setTimeout(function() {
 				self.sync(collection);
-			}, self.timeOuts.longTime);
+			}, errorTime);
 		
 		}
 		
@@ -313,7 +320,7 @@ synci.prototype.sync = function(collection) {
 		
 		setTimeout(function() {
 			self.sync(collection);
-		}, self.timeOuts.longTime);
+		}, errorTime);
 		
 	});
 		
