@@ -133,7 +133,7 @@ audio.prototype.getArgs = function(config) {
 			
 			ARGS.push(config[key]);
 		
-		} else if (SHOT_ARGS[key] != null) {
+		} else if (REC_ARGS[key] != null) {
 		
 			ARGS.push(REC_ARGS[key])
 		
