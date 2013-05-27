@@ -5,15 +5,15 @@ var EventEmitter = require ('events').EventEmitter,
 // - - - - - - - const
 
 var COMMAND = 'fswebcam',
-	SHOT_ARGS = [
-		'--resolution', '1280x960',
-		'--fps', '30',
-		'--skip', '30',
-		'--jpeg', '95',
-		'--no-timestamp',
-		'--no-banner',
-		'--save'
-	];
+	SHOT_ARGS = {
+		'--resolution': '1280x960',
+		'--fps': '30',
+		'--skip': '30',
+		'--jpeg': '95',
+		'--no-timestamp': null,
+		'--no-banner': null,
+		'--save': 'shot.jpg'
+	};
 
 // - - - - - - -
 
@@ -25,14 +25,14 @@ var video = module.exports = function() {
 
 util.inherits (video, EventEmitter);
 
-video.prototype.shot = function(location) {
+video.prototype.shot = function(config) {
 	
 	var self = this;
 	
 	if (self.forkRunning) return;
 	
 	self.forkRunning = true;
-	var fork  = spawn(COMMAND, SHOT_ARGS.concat([location]), {detached: true}),
+	var fork  = spawn(COMMAND, self.getArgs(config), {detached: true}),
 		error = '';
 	
 	fork.unref();
@@ -52,6 +52,29 @@ video.prototype.shot = function(location) {
 	
 }
 
+video.prototype.getArgs = function(config) {
+	
+	var ARGS = [];
+	
+	Object.keys(SHOT_ARGS).forEach(function(key) {
+		
+		ARGS.push(key);
+		
+		if (config[key] != null) {
+			
+			ARGS.push(config[key]);
+		
+		} else if (SHOT_ARGS[key] != null) {
+		
+			ARGS.push(SHOT_ARGS[key])
+		
+		}
+		
+	});
+	
+	return ARGS;
+	
+}
 // fswebcam --resolution 1280x960 --fps 30  --skip 30 --jpeg 95 --save htdocs/video/shot.jpg
 // gst-launch-0.10 -e v4l2src ! ffmpegcolorspace ! pngenc snapshot=true ! filesink location=/path/
 //convert ~/Downloads/shot.png rose: -colorspace Gray -colors 64 -format %c histogram:info:- > ~/Desktop/test.txt

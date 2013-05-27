@@ -30,6 +30,9 @@ videoTask.prototype.run = function () {
 	
 	});
 	
-	self.videoRecorder.shot(self.location);
+	self.videoRecorder.shot({
+		'--resolution': self.resolution,
+		'--save': self.location,
+	});
 	
 };
