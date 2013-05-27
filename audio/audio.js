@@ -121,6 +121,27 @@ audio.prototype.measureLevel = function() {
 	return median;
 }
 
+audio.prototype.measureDC = function() {
+	
+	var self = this,
+		sum = 0;
+	
+	self.buffers.forEach(function(buffer) {
+	
+		var position = 0,
+			val;
+		
+		while (position < buffer.length) {
+			val = buffer.readInt16LE(position);
+			sum += Math.abs(val);
+			position += 2;
+		}
+	
+	});
+	
+	return sum;
+}
+
 audio.prototype.getArgs = function(config) {
 	
 	var ARGS = [];
