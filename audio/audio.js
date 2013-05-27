@@ -6,11 +6,17 @@ var EventEmitter = require ('events').EventEmitter,
 // - - - - - - - const
 
 var COMMAND = 'arecord',
-	ARGS = ['-f', 'S16_LE', '-r', '16000', '-D', 'hw:1,0', '-d'];
+	REC_ARGS = {
+		'-f': 'S16_LE',
+		'-r': '16000',
+		'-D': 'hw:1,0',
+		'-c': 2
+		'-d': 1
+	};
 
 // - - - microphone constants
 
-var DC = 254.96,
+var DC = 0, //254.96,
 	minDB = 60,
 	maxDB = 120;
 
@@ -56,7 +62,7 @@ audio.prototype.clear = function(duration) {
 	
 }
 
-audio.prototype.record = function(duration) {
+audio.prototype.record = function(config) {
 	
 	var self = this;
 	
@@ -66,7 +72,7 @@ audio.prototype.record = function(duration) {
 	
 	self.clear();
 	
-	var fork  = spawn(COMMAND, ARGS.concat([duration]), {detached: true}),
+	var fork  = spawn(COMMAND, self.getArgs(config), {detached: true}),
 		error = '';
 	
 	fork.unref();
@@ -113,4 +119,28 @@ audio.prototype.measureLevel = function() {
 	median = Math.max(minDB, maxDB + minDB * Math.log(median)/Math.LN10);
 	
 	return median;
+}
+
+audio.prototype.getArgs = function(config) {
+	
+	var ARGS = [];
+	
+	Object.keys(REC_ARGS).forEach(function(key) {
+		
+		ARGS.push(key);
+		
+		if (config[key] != null) {
+			
+			ARGS.push(config[key]);
+		
+		} else if (SHOT_ARGS[key] != null) {
+		
+			ARGS.push(REC_ARGS[key])
+		
+		}
+		
+	});
+	
+	return ARGS;
+	
 }

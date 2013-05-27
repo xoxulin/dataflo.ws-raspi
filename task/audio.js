@@ -34,6 +34,9 @@ audioTask.prototype.run = function () {
 	
 	});
 	
-	self.audioRecorder.record(1);
+	self.audioRecorder.record({
+		'-d': self.duration,
+		'-c': self.channels
+	});
 	
 };
