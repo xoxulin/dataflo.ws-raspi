@@ -21,9 +21,8 @@ var synci = module.exports = function (config) {
 	
 	// timeouts and syncDomain
 	
-	// ping: 1000
-	// shortTime: 1000
-	// longTime: 30000
+	// sync: 1000
+	// error: 30000
 	self.timeOuts = config.timeOuts;
 	
 	// syncDomain: example.com
@@ -204,7 +203,7 @@ synci.prototype.login = function(cb) {
 	var self = this;
 	
 	self.processCallbackByToken('login', {
-		timeout: self.timeOuts.shortTime,
+		timeout: self.timeOuts.sync,
 		syncDomain: self.syncDomain,
 		credential: self.credential
 	}, function(error, wf) {
