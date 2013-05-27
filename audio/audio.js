@@ -115,7 +115,7 @@ audio.prototype.measureLevel = function(DC) {
 	});
 	
 	median = abssum / (count*rangeInt16);
-	median = Math.max(minDB, maxDB + minDB * Math.log(median)/Math.LN10);
+	median = minDB + (maxDB - minDB)* median;
 	
 	return median;
 }
