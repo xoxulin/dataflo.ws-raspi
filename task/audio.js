@@ -17,7 +17,7 @@ audioTask.prototype.run = function () {
 		
 	self.audioRecorder.on('end', function() {
 		
-		var ambientLevel = self.audioRecorder.measureLevel();
+		var ambientLevel = self.audioRecorder.measureLevel(self.DC);
 		
 		self.audioRecorder.clear();
 		

@@ -16,8 +16,7 @@ var COMMAND = 'arecord',
 
 // - - - microphone constants
 
-var DC = 0, //254.96,
-	minDB = 60,
+var minDB = 60,
 	maxDB = 120;
 
 var rangeInt16 = 1 << 15;
@@ -94,7 +93,7 @@ audio.prototype.record = function(config) {
 	
 }
 
-audio.prototype.measureLevel = function() {
+audio.prototype.measureLevel = function(DC) {
 	
 	var self = this,
 		median = 0,
@@ -107,7 +106,7 @@ audio.prototype.measureLevel = function() {
 			val;
 		
 		while (position < buffer.length) {
-			val = buffer.readInt16LE(position)-DC;
+			val = buffer.readInt16LE(position) - DC;
 			abssum += Math.abs(val);
 			position += 2;
 			count++;
@@ -124,7 +123,8 @@ audio.prototype.measureLevel = function() {
 audio.prototype.measureDC = function() {
 	
 	var self = this,
-		sum = 0;
+		sum = 0,
+		count = 0;
 	
 	self.buffers.forEach(function(buffer) {
 	
@@ -133,13 +133,14 @@ audio.prototype.measureDC = function() {
 		
 		while (position < buffer.length) {
 			val = buffer.readInt16LE(position);
-			sum += Math.abs(val);
+			sum += val;
 			position += 2;
+			count++;
 		}
 	
 	});
 	
-	return sum;
+	return sum/count;
 }
 
 audio.prototype.getArgs = function(config) {
