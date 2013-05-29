@@ -60,25 +60,31 @@ util.extend (wifiScanTask.prototype, {
 			var parameters = cell.split("\n");
 			parameters.pop();
 			
-			parameters.forEach(function(parameter) {
-				var match = parameter.match(parameterRe);
-				
-				if (match) {
-					lastParameter = match[1].toLowerCase().replace(/\(\d*\)/g,'').replace(/\s+/g,'_');
-					currentWiFi[lastParameter] = match[3];
-				} else {
-					var spaceMatch = parameter.match(continueRe);
-					currentWiFi[lastParameter] += spaceMatch && spaceMatch[1] || parameter;
-				}
-			});
+			if (parameters && parameters.length > 0) {
 			
-			currentWiFi.essid = currentWiFi.essid.replace(/["<>\(\)]/g,'');
-			currentWiFi.address = currentWiFi.address.replace(/:/g,'').toLowerCase();
-			
-			var signal = currentWiFi.signal_level && currentWiFi.signal_level.split('/') || ['0', '100'];
-			currentWiFi.signal_level = Math.round(parseInt(signal[0])/parseInt(signal[1])*100);
+				parameters.forEach(function(parameter) {
+					var match = parameter.match(parameterRe);
+					
+					if (match) {
+						lastParameter = match[1].toLowerCase().replace(/\(\d*\)/g,'').replace(/\s+/g,'_');
+						currentWiFi[lastParameter] = match[3];
+					} else {
+						var spaceMatch = parameter.match(continueRe);
+						currentWiFi[lastParameter] += spaceMatch && spaceMatch[1] || parameter;
+					}
+				});
 				
-			wifiList.push(currentWiFi);
+			}
+			
+			if (currentWiFi.essid && currentWiFi.address) {
+				currentWiFi.essid = currentWiFi.essid.replace(/["<>\(\)]/g,'');
+				currentWiFi.address = currentWiFi.address.replace(/:/g,'').toLowerCase();
+			
+				var signal = currentWiFi.signal_level && currentWiFi.signal_level.split('/') || ['0', '100'];
+				currentWiFi.signal_level = Math.round(parseInt(signal[0])/parseInt(signal[1])*100);
+				
+				wifiList.push(currentWiFi);
+			}
 		});
 		
 		self.completed ({
