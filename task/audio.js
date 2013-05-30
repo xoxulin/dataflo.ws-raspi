@@ -36,7 +36,8 @@ audioTask.prototype.run = function () {
 	
 	self.audioRecorder.record({
 		'-d': self.duration,
-		'-c': self.channels
+		'-c': self.channels,
+		'-r': self.rate
 	});
 	
 };

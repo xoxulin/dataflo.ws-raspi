@@ -11,7 +11,9 @@ var COMMAND = 'arecord',
 		'-r': '16000',
 		'-D': 'hw:1,0',
 		'-c': 1,
-		'-d': 1
+		'-d': 1,
+		'--disable-softvol': null,
+		'-N': null
 	};
 
 // - - - microphone constants
@@ -19,7 +21,7 @@ var COMMAND = 'arecord',
 var minDB = 60,
 	maxDB = 120;
 
-var rangeInt16 = 1 << 15;
+var rangeInt16 = 1 << (16 - 1); // half of range values
 
 // - - - - - - -
 
@@ -116,7 +118,7 @@ audio.prototype.measureLevel = function(DC) {
 	
 	median = abssum / (count*rangeInt16);
 	if (isNaN(median) || median == null) median = 0;
-	median = minDB + (maxDB - minDB)* median;
+	median = minDB + (maxDB - minDB)* Math.sqrt(Math.sqrt(median));
 	
 	return median;
 }
