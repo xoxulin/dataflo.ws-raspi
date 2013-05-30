@@ -115,6 +115,7 @@ audio.prototype.measureLevel = function(DC) {
 	});
 	
 	median = abssum / (count*rangeInt16);
+	if (isNaN(median) || median == null) median = 0;
 	median = minDB + (maxDB - minDB)* median;
 	
 	return median;
