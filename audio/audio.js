@@ -150,6 +150,9 @@ audio.prototype.getArgs = function(config) {
 	
 	var ARGS = [];
 	
+	// must be INTEGER
+	config['-d'] = Math.ceil(config['-d']);
+	
 	Object.keys(REC_ARGS).forEach(function(key) {
 		
 		ARGS.push(key);
