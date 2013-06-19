@@ -28,10 +28,20 @@ var gpsi = module.exports = function (config) {
 util.inherits (gpsi, EventEmitter);
 
 gpsi.prototype.onlocation = function (location) {
-		
+	
+	if (location.longitude == undefined || location.lattitude == undefined) return;
+	
+	var loc = {
+		timestamp: location.timestamp,
+		latitude: location.lattitude,
+		longitude: location.longitude,
+		altitude: location.altitude,
+		speed: location.speed
+	};
+	
 	var wfCfg = this.workflow,
 		wf = new workflow(wfCfg, {
-			location: location,
+			location: loc,
 			data: {}
 		});
 	
