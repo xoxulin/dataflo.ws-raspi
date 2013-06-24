@@ -29,11 +29,11 @@ util.inherits (gpsi, EventEmitter);
 
 gpsi.prototype.onlocation = function (location) {
 	
-	if (location.longitude == undefined || location.lattitude == undefined) return;
+	if (location.longitude == undefined || location.latitude == undefined) return;
 	
 	var loc = {
 		timestamp: location.timestamp,
-		latitude: location.lattitude,
+		latitude: location.latitude,
 		longitude: location.longitude,
 		altitude: location.altitude,
 		speed: location.speed
