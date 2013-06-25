@@ -21,10 +21,18 @@ audioTask.prototype.run = function () {
 		
 		self.audioRecorder.clear();
 		
-		self.completed({
-			type: 'ambient',
-			value: ambientLevel
-		});
+		if (ambientLevel != null) {
+		
+			self.completed({
+				type: 'ambient',
+				value: ambientLevel
+			});
+		
+		} else {
+			
+			self.failed('no sound signal');
+			
+		}
 	
 	});
 	
