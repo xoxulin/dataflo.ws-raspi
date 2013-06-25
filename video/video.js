@@ -58,17 +58,15 @@ video.prototype.getArgs = function(config) {
 	
 	var resolution = [
 			'video/x-raw-yuv',
-			'width=' + config.resolution.width,
-			'height=' + config.resolution.height
+			'width=' + config.width,
+			'height=' + config.height
 		].join(','),
-		timestamp = new Date().toISOString().replace(/-|T|:/g,'').substr(0, 14),
-		location = 'location=' + config.path + timestamp + '.jpg',
 		result = [
 			'-e', 'v4l2src', 'always-copy=false', 'num-buffers=1',
 			'!', resolution,
 			'!', 'ffmpegcolorspace',
 			'!', 'jpegenc', 'quality=100',
-			'!', 'filesink', location
+			'!', 'filesink', config.location
 		]
 	
 	return result;

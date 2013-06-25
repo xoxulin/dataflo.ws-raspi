@@ -30,9 +30,14 @@ videoTask.prototype.run = function () {
 	
 	});
 	
+	var timestamp = new Date().toISOString().replace(/-|T|:/g,'').substr(0, 14);
+	
+	self.location = self.path + timestamp + '.jpg';
+	
 	self.videoRecorder.shot({
-		'--resolution': self.resolution,
-		'--save': self.location,
+		location: self.location,
+		width: self.resolution.width,
+		height: self.resolution.height
 	});
 	
 };
