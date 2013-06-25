@@ -4,16 +4,18 @@ var EventEmitter = require ('events').EventEmitter,
 
 // - - - - - - - const
 
-var COMMAND = 'fswebcam',
-	SHOT_ARGS = {
-		'--resolution': '1280x960',
-		'--fps': '30',
-		'--skip': '30',
-		'--jpeg': '95',
-		'--no-timestamp': null,
-		'--no-banner': null,
-		'--save': 'shot.jpg'
-	};
+//var COMMAND = 'fswebcam',
+//	SHOT_ARGS = {
+//		'--resolution': '1280x960',
+//		'--fps': '30',
+//		'--skip': '30',
+//		'--jpeg': '95',
+//		'--no-timestamp': null,
+//		'--no-banner': null,
+//		'--save': 'shot.jpg'
+//	};
+
+var COMMAND = 'gst-launch-0.10';
 
 // - - - - - - -
 
@@ -54,25 +56,42 @@ video.prototype.shot = function(config) {
 
 video.prototype.getArgs = function(config) {
 	
-	var ARGS = [];
+	var resolution = [
+			'video/x-raw-yuv',
+			'width=' + config.resolution.width,
+			'height=' + config.resolution.height
+		].join(','),
+		timestamp = new Date().toISOString().replace(/-|T|:/g,'').substr(0, 14),
+		location = 'location=' + config.path + timestamp + '.jpg',
+		result = [
+			'-e', 'v4l2src', 'always-copy=false', 'num-buffers=1',
+			'!', resolution,
+			'!', 'ffmpegcolorspace',
+			'!', 'jpegenc', 'quality=100',
+			'!', 'filesink', location
+		]
 	
-	Object.keys(SHOT_ARGS).forEach(function(key) {
-		
-		ARGS.push(key);
-		
-		if (config[key] != null) {
-			
-			ARGS.push(config[key]);
-		
-		} else if (SHOT_ARGS[key] != null) {
-		
-			ARGS.push(SHOT_ARGS[key])
-		
-		}
-		
-	});
+	return result;
 	
-	return ARGS;
+//	var ARGS = [];
+//	
+//	Object.keys(SHOT_ARGS).forEach(function(key) {
+//		
+//		ARGS.push(key);
+//		
+//		if (config[key] != null) {
+//			
+//			ARGS.push(config[key]);
+//		
+//		} else if (SHOT_ARGS[key] != null) {
+//		
+//			ARGS.push(SHOT_ARGS[key])
+//		
+//		}
+//		
+//	});
+//	
+//	return ARGS;
 	
 }
 // fswebcam --resolution 1280x960 --fps 30  --skip 30 --jpeg 95 --save htdocs/video/shot.jpg
