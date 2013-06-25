@@ -4,17 +4,6 @@ var EventEmitter = require ('events').EventEmitter,
 
 // - - - - - - - const
 
-//var COMMAND = 'fswebcam',
-//	SHOT_ARGS = {
-//		'--resolution': '1280x960',
-//		'--fps': '30',
-//		'--skip': '30',
-//		'--jpeg': '95',
-//		'--no-timestamp': null,
-//		'--no-banner': null,
-//		'--save': 'shot.jpg'
-//	};
-
 var COMMAND = 'gst-launch-0.10';
 
 // - - - - - - -
@@ -47,7 +36,6 @@ video.prototype.shot = function(config) {
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
-		console.log(code);	
 		if (code != 0) self.emit('error', error);
 		else self.emit('end');
 	});
@@ -66,30 +54,10 @@ video.prototype.getArgs = function(config) {
 			'!', resolution,
 			'!', 'ffmpegcolorspace',
 			'!', 'jpegenc', 'quality=100',
-			'!', 'filesink', config.location
+			'!', 'filesink', 'location='+config.location
 		]
 	
 	return result;
-	
-//	var ARGS = [];
-//	
-//	Object.keys(SHOT_ARGS).forEach(function(key) {
-//		
-//		ARGS.push(key);
-//		
-//		if (config[key] != null) {
-//			
-//			ARGS.push(config[key]);
-//		
-//		} else if (SHOT_ARGS[key] != null) {
-//		
-//			ARGS.push(SHOT_ARGS[key])
-//		
-//		}
-//		
-//	});
-//	
-//	return ARGS;
 	
 }
 // fswebcam --resolution 1280x960 --fps 30  --skip 30 --jpeg 95 --save htdocs/video/shot.jpg
