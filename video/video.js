@@ -44,7 +44,7 @@ video.prototype.shot = function(config) {
 
 video.prototype.getArgs = function(config) {
 	
-	var resolution = [
+	var result = [
 			'-f', 'video4linux2',
 			'-i', '/dev/video0',
 			'-q', '2',
