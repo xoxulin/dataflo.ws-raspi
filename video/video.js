@@ -4,7 +4,7 @@ var EventEmitter = require ('events').EventEmitter,
 
 // - - - - - - - const
 
-var COMMAND = 'gst-launch-0.10';
+var COMMAND = 'avconv';
 
 // - - - - - - -
 
@@ -45,21 +45,17 @@ video.prototype.shot = function(config) {
 video.prototype.getArgs = function(config) {
 	
 	var resolution = [
-			'video/x-raw-yuv',
-			'width=' + config.width,
-			'height=' + config.height
-		].join(','),
-		result = [
-			'-e', 'v4l2src', 'always-copy=false', 'num-buffers=1',
-			'!', resolution,
-			'!', 'ffmpegcolorspace',
-			'!', 'jpegenc', 'quality=100',
-			'!', 'filesink', 'location='+config.location
+			'-f', 'video4linux2',
+			'-i', '/dev/video0',
+			'-q', '2',
+			'-vframes', '1',
+			config.location
 		]
 	
 	return result;
 	
 }
+// avconv -f video4linux2 -i /dev/video -q 2 -vframes 1 htdocs/photos/shot.jpg
 // fswebcam --resolution 1280x960 --fps 30  --skip 30 --jpeg 95 --save htdocs/video/shot.jpg
 // gst-launch-0.10 -e v4l2src ! ffmpegcolorspace ! pngenc snapshot=true ! filesink location=/path/
 //convert ~/Downloads/shot.png rose: -colorspace Gray -colors 64 -format %c histogram:info:- > ~/Desktop/test.txt
