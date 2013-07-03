@@ -71,7 +71,7 @@ wmr200.prototype.setOutdoorSensorIds = function(ids) {
 wmr200.prototype.setRanges = function(ranges) {
 
 	var self = this;
-	self.ranges = ranges;
+	self.ranges = ranges || {};
 	
 }
 
