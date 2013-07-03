@@ -22,6 +22,7 @@ var wmri = module.exports = function (config) {
 	self.wmr = wmr;
 	
 	wmr.setOutdoorSensorIds(config.outdoorSensorIds);
+	wmr.setRanges(config.ranges);
 	
 	self.wmr.on('historystate', self.historystate.bind(self));
 	self.wmr.on('statechange', self.statechange.bind(self));

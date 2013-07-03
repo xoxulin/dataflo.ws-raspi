@@ -56,6 +56,7 @@ var wmr200  = function () {
 	self.emitter = new EventEmitter();
 	self.emitter.state = self.state = {};
 	self.emitter.setOutdoorSensorIds = self.setOutdoorSensorIds.bind(self);
+	self.emitter.setRanges = self.setRanges.bind(self);
 	self.init();
 	
 }
@@ -64,6 +65,13 @@ wmr200.prototype.setOutdoorSensorIds = function(ids) {
 
 	var self = this;
 	self.ids = DEFAULT_IDS.concat(ids);
+	
+}
+
+wmr200.prototype.setRanges = function(ranges) {
+
+	var self = this;
+	self.ranges = ranges;
 	
 }
 
@@ -781,24 +789,32 @@ wmr200.prototype.isChangedData = function(data) {
 	var self = this,
 		value,
 		change = false;
+		
+	if (data.type in self.ranges) {
+		
+		// check bad / error values
+		var ranges = self.ranges[data.type];
+		if (data.value < ranges[0] || data.value > ranges[1]) return false;
+		
+	}
 	
-	if (!this.state[data.type]) {
-		this.state[data.type] = {};
+	if (!self.state[data.type]) {
+		self.state[data.type] = {};
 		change = true;
 	}
 	
 	if (data.hasOwnProperty('sensorNum')) {
 		
-		if (!this.state[data.type][data.sensorNum]) {
-			this.state[data.type][data.sensorNum] = {};
+		if (!self.state[data.type][data.sensorNum]) {
+			self.state[data.type][data.sensorNum] = {};
 			change = true;
 		}
 		
-		value = this.state[data.type][data.sensorNum];
+		value = self.state[data.type][data.sensorNum];
 		
 	} else {
 	
-		value = this.state[data.type];
+		value = self.state[data.type];
 		
 	}
 	
