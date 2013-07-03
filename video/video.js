@@ -28,6 +28,12 @@ video.prototype.shot = function(config) {
 	
 	fork.unref();
 	
+	fork.stdout.on('end', function() {
+		
+		if (!error) self.emit('end');
+		
+	});
+	
 	fork.stderr.on('data', function (err) {
 		
 		error += err;
@@ -35,9 +41,12 @@ video.prototype.shot = function(config) {
 	});
 
 	fork.on('exit', function (code) {
+		
 		self.forkRunning = false;
-		if (code != 0) self.emit('error', error);
-		else self.emit('end');
+		if (code != 0) {
+			self.emit('error', error);
+		}
+		
 	});
 	
 }

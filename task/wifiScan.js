@@ -25,6 +25,12 @@ util.extend (wifiScanTask.prototype, {
 			stdout += data;
 			
 		});
+		
+		fork.stdout.on('end', function() {
+			
+			if (!stderr) self.parseIWList(stdout);
+			
+		});
 
 		fork.stderr.on('data', function (data) {
 			
@@ -34,7 +40,7 @@ util.extend (wifiScanTask.prototype, {
 
 		fork.on('exit', function (code) {
 
-			self.parseIWList(stdout);
+			if (code != 0) self.failed('no sound signal');
 		
 		});
 	
