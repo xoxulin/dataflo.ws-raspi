@@ -19,7 +19,7 @@ util.inherits (video, EventEmitter);
 video.prototype.shot = function(config) {
 	
 	var self = this,
-		exitCode;
+		exitCode = 0;
 	
 	if (self.forkRunning) return;
 	

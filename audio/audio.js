@@ -66,7 +66,7 @@ audio.prototype.clear = function(duration) {
 audio.prototype.record = function(config) {
 	
 	var self = this,
-		exitCode;
+		exitCode = 0;
 	
 	if (self.forkRunning) return;
 	
