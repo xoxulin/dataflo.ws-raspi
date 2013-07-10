@@ -698,15 +698,16 @@ wmr200.prototype.getCheckSumValid = function(buffer) {
 
 wmr200.prototype.applyHistory = function(data) {
 	
-	var self = this;
+	var self = this,
+		change = false,
+		
+		stateChange = [];
 	
 	if (data.constructor !== Array) data = [data];
 	
 	data.forEach(function(item) {
 		
 		var itemChanged = self.isChangedData(item);
-		
-		console.log(item, 'itemChanged', itemChanged);
 		
 		if (itemChanged) {
 			
@@ -730,9 +731,13 @@ wmr200.prototype.applyHistory = function(data) {
 			}
 		}
 		
+		stateChange.push(item);
+		
 	});
 	
-	self.emitter.emit('historystate', data);
+	if (change) {
+		self.emitter.emit('historystate', stateChange);
+	}
 	
 };
 
@@ -752,8 +757,6 @@ wmr200.prototype.applyState = function(data) {
 			self.ids.indexOf(item.sensorNum) == -1) return;
 		
 		var itemChanged = self.isChangedData(item);
-		
-		console.log(item, 'itemChanged', itemChanged);
 		
 		if (itemChanged) {
 			
@@ -781,8 +784,6 @@ wmr200.prototype.applyState = function(data) {
 		}
 		
 	});
-	
-	console.log('\n\n\------------------------------------\n', stateChange, '\n---------------------------\n\n\n');
 	
 	if (change) {
 		
