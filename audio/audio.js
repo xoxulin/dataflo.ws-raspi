@@ -65,7 +65,8 @@ audio.prototype.clear = function(duration) {
 
 audio.prototype.record = function(config) {
 	
-	var self = this;
+	var self = this,
+		exitCode;
 	
 	if (self.forkRunning) return;
 	
@@ -82,7 +83,7 @@ audio.prototype.record = function(config) {
 	
 	fork.stdout.on('end', function() {
 		
-		if (!error) self.emit('end');
+		if (exitCode == 0) self.emit('end');
 		
 	});
 
@@ -94,6 +95,7 @@ audio.prototype.record = function(config) {
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
+		exitCode = code;
 		if (code != 0) {
 			self.emit('error', error);
 		}
