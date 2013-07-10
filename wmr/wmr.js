@@ -782,6 +782,8 @@ wmr200.prototype.applyState = function(data) {
 		
 	});
 	
+	console.log('\n\n\------------------------------------\n', stateChange, '\n---------------------------\n\n\n');
+	
 	if (change) {
 		
 		self.emitter.emit('statechange', {

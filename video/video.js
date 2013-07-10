@@ -18,7 +18,8 @@ util.inherits (video, EventEmitter);
 
 video.prototype.shot = function(config) {
 	
-	var self = this;
+	var self = this,
+		exitCode;
 	
 	if (self.forkRunning) return;
 	
@@ -30,7 +31,7 @@ video.prototype.shot = function(config) {
 	
 	fork.stdout.on('end', function() {
 		
-		if (!error) self.emit('end');
+		if (exitCode == 0) self.emit('end');
 		
 	});
 	
@@ -39,13 +40,19 @@ video.prototype.shot = function(config) {
 		error += err;
 		
 	});
+	
+	fork.stderr.on('end', function () {
+		
+		if (exitCode != 0) {
+			self.emit('error', error);
+		}
+		
+	});
 
 	fork.on('exit', function (code) {
 		
 		self.forkRunning = false;
-		if (code != 0) {
-			self.emit('error', error);
-		}
+		exitCode = code;
 		
 	});
 	

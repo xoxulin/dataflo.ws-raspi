@@ -92,13 +92,18 @@ audio.prototype.record = function(config) {
 		error += err;
 		
 	});
+	
+	fork.stderr.on('end', function () {
+		
+		if (exitCode != 0) {
+			self.emit('error', error);
+		}
+		
+	});
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
 		exitCode = code;
-		if (code != 0) {
-			self.emit('error', error);
-		}
 	});
 	
 }
