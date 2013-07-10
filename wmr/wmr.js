@@ -704,7 +704,11 @@ wmr200.prototype.applyHistory = function(data) {
 	
 	data.forEach(function(item) {
 		
-		if (self.isChangedData(item)) {
+		var itemChanged = self.isChangedData(item);
+		
+		console.log(item, 'itemChanged', itemChanged);
+		
+		if (itemChanged) {
 			
 			var oldValue;
 			
@@ -747,7 +751,11 @@ wmr200.prototype.applyState = function(data) {
 		if (item.hasOwnProperty('sensorNum') &&
 			self.ids.indexOf(item.sensorNum) == -1) return;
 		
-		if (self.isChangedData(item)) {
+		var itemChanged = self.isChangedData(item);
+		
+		console.log(item, 'itemChanged', itemChanged);
+		
+		if (itemChanged) {
 			
 			var oldValue;
 			

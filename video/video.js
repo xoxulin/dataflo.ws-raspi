@@ -57,9 +57,12 @@ video.prototype.getArgs = function(config) {
 			'-f', 'video4linux2',
 			'-i', '/dev/video0',
 			'-q', '2',
+			'-s', config.width+'x'+config.height,
+			'-r', 30,
+			'-pix_fmt', 'yuvj420p',
 			'-vframes', '1',
 			config.location
-		]
+		];
 	
 	return result;
 	
