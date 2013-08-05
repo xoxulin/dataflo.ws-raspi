@@ -88,11 +88,13 @@ util.extend (wifiScanTask.prototype, {
 			if (currentWiFi.essid && currentWiFi.address) {
 				currentWiFi.essid = currentWiFi.essid.replace(/["<>\(\)]/g,'');
 				currentWiFi.address = currentWiFi.address.replace(/:/g,'').toLowerCase();
-			
+				
 				var signal = currentWiFi.signal_level && currentWiFi.signal_level.split('/') || ['0', '100'];
+				if (signal.length == 1) signal.push('100');
 				currentWiFi.signal_level = Math.round(parseInt(signal[0])/parseInt(signal[1])*100);
 				
 				var quality = currentWiFi.quality && currentWiFi.quality.split('/') || ['0', '100'];
+				if (quality.length == 1) quality.push('100');
 				currentWiFi.quality = Math.round(parseInt(quality[0])/parseInt(quality[1])*100);
 				
 				wifiList.push(currentWiFi);
