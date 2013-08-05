@@ -52,6 +52,7 @@ var wmr200  = function () {
 	var self = this;
 	
 	self.ids = DEFAULT_IDS;
+	self.ranges = {};
 	
 	self.emitter = new EventEmitter();
 	self.emitter.state = self.state = {};

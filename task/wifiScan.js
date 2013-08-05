@@ -54,17 +54,20 @@ util.extend (wifiScanTask.prototype, {
 			currentWiFi,
 			lastParameter
 			cells = output.split (/Cell \d+ - /),
-			parameterRe = /^\s*([^:=]+?)\s*(:|=)\s*(.*?)\s*$/,
-			continueRe = /^\s*(.*?)\s*$/;
+			firstSpacesRe = /^\s*/gm,
+			lastSpacesRe = /\s*$/gm,
+			doubleSpacesRe = /\s\s/gm,
+			parameterRe = /^([^:=]+?)\s*(:|=)\s*(.*?)$/,
+			continueRe = /^(.*?)$/;
 		
 		cells.shift(); //remove 'wifi scan completed'
 		if (self.verbose) self.emit('log', 'CELLS accepted: ' + cells.length);
 		cells.forEach(function (cell) {
 		
 			currentWiFi = {};
+			cell = cell.replace(firstSpacesRe, '').replace(lastSpacesRe, '').replace(doubleSpacesRe, '\n');
 			
 			var parameters = cell.split("\n");
-			parameters.pop();
 			
 			if (parameters && parameters.length > 0) {
 			
@@ -88,6 +91,9 @@ util.extend (wifiScanTask.prototype, {
 			
 				var signal = currentWiFi.signal_level && currentWiFi.signal_level.split('/') || ['0', '100'];
 				currentWiFi.signal_level = Math.round(parseInt(signal[0])/parseInt(signal[1])*100);
+				
+				var quality = currentWiFi.quality && currentWiFi.quality.split('/') || ['0', '100'];
+				currentWiFi.quality = Math.round(parseInt(quality[0])/parseInt(quality[1])*100);
 				
 				wifiList.push(currentWiFi);
 			}
