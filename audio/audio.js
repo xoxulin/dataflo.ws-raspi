@@ -133,7 +133,7 @@ audio.prototype.measureLevel = function(DC) {
 	
 	if (isNaN(median) || median == null) return null;
 	 
-	median = minDB + (maxDB - minDB)* Math.sqrt(Math.sqrt(median));
+	median = minDB + (maxDB - minDB)*median;
 	
 	return median;
 }
@@ -159,6 +159,13 @@ audio.prototype.measureDC = function() {
 	});
 	
 	return sum/count;
+}
+
+audio.prototype.setDBLimits = function(min, max) {
+	
+	minDB = min;
+	maxDB = max;
+	
 }
 
 audio.prototype.getArgs = function(config) {
