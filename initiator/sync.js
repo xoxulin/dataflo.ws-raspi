@@ -28,6 +28,10 @@ var synci = module.exports = function (config) {
 	// syncDomain: example.com
 	self.syncDomain = config.syncDomain;
 	
+	// limits
+	
+	self.limit = config.limit;
+	
 	// - - - callback wfs
 	
 	self.callbackInitiator = new Callback({
@@ -279,7 +283,7 @@ synci.prototype.sync = function(collection) {
 	
 	var wf = new workflow(collectionWf, {
 		cookie: self.cookie,
-		limit: 10,
+		limit: self.limit,
 		syncDomain: self.syncDomain,		
 		data: {}
 	});
