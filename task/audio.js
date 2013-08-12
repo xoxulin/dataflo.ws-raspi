@@ -7,7 +7,7 @@ var audioTask = module.exports = function (config) {
 	this.init (config);
 	this.audioRecorder = new audio();
 	
-	var dbLimits = self.dbLimits || {min: 60, max: 120};
+	var dbLimits = this.dbLimits || {min: 60, max: 120};
 	
 	this.audioRecorder.setDBLimits(dbLimits.min, dbLimits.max);
 	
