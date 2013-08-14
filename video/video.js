@@ -1,7 +1,8 @@
 var EventEmitter = require ('events').EventEmitter,
 	util         = require ('util'),
 	os 	     = require ('os'),
-	spawn        = require ('child_process').spawn;
+	spawn        = require ('child_process').spawn,
+	webcamManager = require ('../manager/webcamManager').getInstance();
 
 // - - - - - - - const
 
@@ -40,7 +41,10 @@ video.prototype.shot = function(config) {
 	console.log('\n\n\nHEAP_USED = ' + heap.toFixed(2) + ' MB, DELTA_HEAP = ' + deltaHeap.toFixed(2) + ' MB, AVG_0 = ' + avg[0] + ',  FREE_MEM = ' + freeMemRelative + ' %\n\n\n');
 	
 	if (self.forkRunning) {
-		self.emit('error', 'fork is still running')
+		self.emit('error', 'fork is still running');
+		return;
+	} else if (webcamManager.getBusy()) {
+		self.emit('error', 'webcam is busy');
 		return;
 	} else if (freeMemRelative < FREE_MEM || avg[0] > AVG_LIMIT) {
 		self.emit('error', 'cpu is overloaded')
@@ -48,6 +52,8 @@ video.prototype.shot = function(config) {
 	}
 	
 	self.forkRunning = true;
+	webcamManager.setBusy(self.forkRunning);
+	
 	var fork  = spawn(COMMAND, self.getArgs(config), {detached: true}),
 		error = '';
 	
@@ -86,6 +92,7 @@ video.prototype.shot = function(config) {
 	fork.on('exit', function (code) {
 		
 		self.forkRunning = false;
+		webcamManager.setBusy(self.forkRunning);
 		exitCode = code;
 		if (timeout) clearTimeout(timeout);
 		

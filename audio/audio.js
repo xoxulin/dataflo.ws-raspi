@@ -1,7 +1,8 @@
 var EventEmitter = require ('events').EventEmitter,
 	util         = require ('util'),
 	spawn        = require ('child_process').spawn,
-	wav 		 = require ('wav');
+	wav 		 = require ('wav'),
+	webcamManager = require ('../manager/webcamManager').getInstance();
 
 // - - - - - - - const
 
@@ -68,9 +69,16 @@ audio.prototype.record = function(config) {
 	var self = this,
 		exitCode = 0;
 	
-	if (self.forkRunning) return;
+	if (self.forkRunning) {
+		self.emit('error', 'fork is still running')
+		return;
+	}  else if (webcamManager.getBusy()) {
+		self.emit('error', 'webcam is busy');
+		return;
+	}
 	
 	self.forkRunning = true;
+	webcamManager.setBusy(self.forkRunning);
 	
 	self.clear();
 	
@@ -103,6 +111,7 @@ audio.prototype.record = function(config) {
 
 	fork.on('exit', function (code) {
 		self.forkRunning = false;
+		webcamManager.setBusy(self.forkRunning);
 		exitCode = code;
 	});
 	
