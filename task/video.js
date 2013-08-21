@@ -13,13 +13,18 @@ util.inherits (videoTask, task);
 
 videoTask.prototype.run = function () {
 	
-	var self = this;
+	var self = this,
+		timestamp = new Date().toISOString().replace(/-|T|:/g,'').substr(0, 14);
+	
+	self.location = self.path + timestamp + '.jpg';
 		
 	self.videoRecorder.on('end', function() {
 		
 		self.completed({
 			type: 'shot',
-			location: self.location
+			location: self.location,
+			width: self.resolution.width,
+			height: self.resolution.height
 		});
 	
 	});
@@ -29,10 +34,6 @@ videoTask.prototype.run = function () {
 		self.failed(error);
 	
 	});
-	
-	var timestamp = new Date().toISOString().replace(/-|T|:/g,'').substr(0, 14);
-	
-	self.location = self.path + timestamp + '.jpg';
 	
 	self.videoRecorder.shot({
 		location: self.location,

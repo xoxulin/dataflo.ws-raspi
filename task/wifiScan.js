@@ -40,7 +40,7 @@ util.extend (wifiScanTask.prototype, {
 
 		fork.on('exit', function (code) {
 
-			if (code != 0) self.failed('no sound signal');
+			if (code != 0) self.failed('no wifi signal');
 		
 		});
 	
