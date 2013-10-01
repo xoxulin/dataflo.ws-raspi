@@ -58,8 +58,9 @@ arduino.prototype.scan = function() {
 		
 		ports.forEach(function(port) {
 			
-			if (port.vendorId == self.serialPortConfig.vendorId &&
-				port.productId == self.serialPortConfig.productId) {
+			if ((port.vendorId == self.serialPortConfig.vendorId &&
+				port.productId == self.serialPortConfig.productId) ||
+				port.pnpId == self.serialPortConfig.pnpId) {
 				needPort = port;
 			}
 			
