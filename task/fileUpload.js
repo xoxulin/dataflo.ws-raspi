@@ -7,7 +7,6 @@ var COMMAND = 'curl',
 
 var fileUpload = module.exports = function (config) {
 	this.init (config);
-	console.log(config);
 };
 
 util.inherits (fileUpload, task);
@@ -20,8 +19,9 @@ util.extend (fileUpload.prototype, {
 			args = this.getArgs(),
 			fork  = spawn(COMMAND, args),
 			stderr = '',
-			stdout = '';
-		
+			stdout = '',
+			exitCode;
+
 		fork.stdout.on('data', function (data) {
 			
 			stdout += data;
@@ -30,7 +30,7 @@ util.extend (fileUpload.prototype, {
 		
 		fork.stdout.on('end', function() {
 			
-			if (!stderr) self.parseResponse(stdout);
+			if (exitCode == 0) self.parseResponse(stdout);
 			
 		});
 
@@ -42,7 +42,9 @@ util.extend (fileUpload.prototype, {
 
 		fork.on('exit', function (code) {
 			
-			if (code != 0) self.failed('curl returns error');
+			exitCode = code;
+			if (code != 0) self.failed('curl returns error: '+ code);
+			if (fork.stdout.destroyed) self.parseResponse(stdout);
 		
 		});
 	
@@ -50,39 +52,63 @@ util.extend (fileUpload.prototype, {
 	
 	parseResponse: function(output) {
 	
-		console.log(output);
-		
 		var self = this,
 			parts = output.split(MAIN_SPLITTER),
 			body = parts[0],
-			meta = JSON.parse(parts[1]);
+			meta = parts[1];
 		
-		console.log(meta, parts);
+		try {
+			meta = JSON.parse(meta);
+		} catch (e) {
+			self.failed('meta format is broken');
+			return;
+		}
 		
-//		if (statusCode == 200) {
-//			self.completed ({
-//				ok: true
-//			});
-//		} else {
-			self.failed({error: true});
-//		}
+		if (meta) {
+			var contentType = meta.contentType.split('; ')[0];
+			if (meta.statusCode == 200 && contentType == 'application/json') {
+				
+				try {
+					var response = JSON.parse(body);
+					self.completed ({
+						response: response,
+						meta: meta
+					});
+				} catch (e) {
+					self.failed('response JSON is broken');
+				}
+			} else {
+				self.failed(meta);
+			}
+		
+		} else {
+		
+			self.failed('meta is broken')
+
+		}
 		
 	},
 	
 	getArgs: function() {
 	
 		return [
-			'--form', this.file.field + '=@' + this.file.location,
-			'--form', 'data=\''+ JSON.stringify(this.data)+'\'',
+			'--form', 'src=@' + this.file,
+			'--form', 'data='+ JSON.stringify(this.data),
 			'-b', this.cookie,
-			'--wite-out', MAIN_SPLITTER +
-			'\'{' +
+			'--write-out', MAIN_SPLITTER +
+			'{' +
 				'"statusCode": %{http_code}, ' +
 				'"contentType": "%{content_type}", ' +
 				'"totalTime": %{time_total}, ' +
-				'"down": {"speed": %{speed_download}, "size": %{size_download}, ' +
-				'"up": {"speed": %{speed_upload}, "size": %{size_upload}}' +
-			'}\''
+				'"down": {' + 
+					'"speed": %{speed_download}, ' +
+					'"size": %{size_download}' +
+				'}, ' +
+				'"up": {' +
+					'"speed": %{speed_upload}, ' +
+					'"size": %{size_upload}' +
+				'}' +
+			'}',
 			this.path
 		]
 	

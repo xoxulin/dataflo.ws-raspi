@@ -111,6 +111,7 @@ video.prototype.getArgs = function(config) {
 			'-C' + 128,
 			'-S' + 128,
 			'-G' + 128,
+			'-j' + 30,
 			'-t' + 0,
 			'-o' + config.location
 		];
