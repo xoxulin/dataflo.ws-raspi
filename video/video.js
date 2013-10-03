@@ -7,8 +7,8 @@ var EventEmitter = require ('events').EventEmitter,
 // - - - - - - - const
 
 var COMMAND = 'uvccapture',
-	FREE_MEM = 5,
-	AVG_LIMIT = 1,
+	FREE_MEM = 1.5,
+	AVG_LIMIT = 1.5,
 	KILL_TIMEOUT = 40000,
 	HEAP = 0;
 
