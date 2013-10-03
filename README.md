@@ -1,4 +1,4 @@
-dataflows-tasks
+Dataflo.ws | Debian | Raspberry Pi
 ===============
 
-Tasks for Dataflo.ws web-framework
+Additional tasks for Dataflo.ws framework on Debian Wheezy | Raspberry Pi platform. Mainly it's working with outernal sensors and media peripherials e.g. webcamera and gps receiver.
