@@ -405,8 +405,11 @@ synci.prototype.processCallbackByToken = function(name, requires, callback) {
 synci.prototype.runCatch = function (wf) {
 	
 	var self = this,
-		error = wf.error,
-		errDesc = error.name + " " + error.type,
+		error = wf.error;
+	
+	if (!error || !error.name || !error.type) return;
+	
+	var errDesc = error.name + " " + error.type,
 		stage = err.name + " (" + (err.type || err.message) + ")";
 	
 	if (!wf.$catches || !wf.$catches[errDesc]) return;
