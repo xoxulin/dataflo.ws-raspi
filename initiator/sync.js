@@ -402,7 +402,7 @@ synci.prototype.processCallbackByToken = function(name, requires, callback) {
 
 // run catch error level
 
-httpdi.prototype.runCatch = function (wf) {
+synci.prototype.runCatch = function (wf) {
 	
 	var self = this,
 		error = wf.error,
