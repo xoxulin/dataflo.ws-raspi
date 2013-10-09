@@ -3,7 +3,8 @@ var task         = require ('dataflo.ws/task/base'),
 	spawn        = require('child_process').spawn;
 
 var COMMAND = 'curl',
-	MAIN_SPLITTER = '\n\nCURL_OUTPUT\n\n';
+	MAIN_SPLITTER = '\n\nCURL_OUTPUT\n\n',
+	CURL_ERROR_REGEX = /^(curl):\s*?\((\d+)\)\s+(.*)$/mi;
 
 var fileUpload = module.exports = function (config) {
 	this.init (config);
@@ -39,11 +40,19 @@ util.extend (fileUpload.prototype, {
 			stderr += data;
 			
 		});
+		
+		fork.stderr.on('end', function (data) {
+			
+			if (exitCode != 0) {
+				self.failed(self.parseError(stderr));
+			}
+			
+		});
 
 		fork.on('exit', function (code) {
 			
 			exitCode = code;
-			if (code != 0) self.failed('curl returns error: '+ code);
+			if (code != 0 && fork.stderr.destroyed) self.failed(self.parseError(stderr));
 			if (fork.stdout.destroyed) self.parseResponse(stdout);
 		
 		});
@@ -86,6 +95,24 @@ util.extend (fileUpload.prototype, {
 			self.failed('meta is broken')
 
 		}
+		
+	},
+	
+	parseError: function(err) {
+		
+		var match = err.match(CURL_ERROR_REGEX);
+		
+		if (match && match[1] && match[2] && match[3]) {
+			
+			var err = new Error(match[3]);
+			
+			err.name = "CurlError";
+			err.type = parseInt(match[2]);
+			
+			return err;
+		}
+		
+		return new Error(err);
 		
 	},
 	

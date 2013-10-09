@@ -321,9 +321,36 @@ synci.prototype.sync = function(collection) {
 	
 		console.log('[ERROR] Sync fail:', collection);
 		
-		setTimeout(function() {
-			self.sync(collection);
-		}, errorTime);
+		var failWf = self.runCatch(wf);
+		
+		if (failWf) {
+		
+			failWf.on('completed', function() {
+			
+				setTimeout(function() {
+					self.sync(collection);
+				}, errorTime);
+			
+			});
+			
+			failWf.on('failed', function() {
+			
+				setTimeout(function() {
+					self.sync(collection);
+				}, errorTime);
+			
+			});
+			
+			failWf.run();
+			
+			
+		} else {
+		
+			setTimeout(function() {
+				self.sync(collection);
+			}, errorTime);
+		
+		}
 		
 	});
 		
@@ -371,4 +398,36 @@ synci.prototype.processCallbackByToken = function(name, requires, callback) {
 		callback(new Error('Workflow ' + name + ' not found'), null);
 		
 	}
+}
+
+// run catch error level
+
+httpdi.prototype.runCatch = function (wf) {
+	
+	var self = this,
+		error = wf.error,
+		errDesc = error.name + " " + error.type,
+		stage = err.name + " (" + (err.type || err.message) + ")";
+	
+	if (!wf.$catches || !wf.$catches[errDesc]) return;
+	
+	var catchTasks = wf.$catches[errDesc].tasks,
+		reqParams = util.extend(true, {
+			error: wf.error
+		}, wf.data),
+		failWf = new workflow ({
+			id:    wf.id,
+			tasks: catchTasks,
+			stage: stage
+		}, reqParams);
+
+	failWf.on ('completed', function () {
+		//self.log ('presenter done');
+	});
+
+	failWf.on ('failed', function () {
+		failWf.log ('Fail Handler failed');
+	});
+	
+	return failWf;
 }
