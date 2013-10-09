@@ -31,7 +31,7 @@ util.extend (fileUpload.prototype, {
 		
 		fork.stdout.on('end', function() {
 			
-			if (exitCode == 0) self.parseResponse(stdout);
+			if (exitCode != null && exitCode == 0) self.parseResponse(stdout);
 			
 		});
 
@@ -43,7 +43,7 @@ util.extend (fileUpload.prototype, {
 		
 		fork.stderr.on('end', function (data) {
 			
-			if (exitCode != 0) {
+			if (exitCode != null && exitCode != 0) {
 				self.failed(self.parseError(stderr));
 			}
 			
