@@ -410,7 +410,7 @@ synci.prototype.runCatch = function (wf) {
 	if (!error || !error.name || !error.type) return;
 	
 	var errDesc = error.name + " " + error.type,
-		stage = err.name + " (" + (err.type || err.message) + ")";
+		stage = error.name + " (" + (error.type || error.message) + ")";
 	
 	if (!wf.$catches || !wf.$catches[errDesc]) return;
 	
