@@ -409,8 +409,7 @@ synci.prototype.runCatch = function (wf) {
 	
 	if (!error || !error.name || !error.type) return;
 	
-	var errDesc = error.name + " " + error.type,
-		stage = error.name + " (" + (error.type || error.message) + ")";
+	var errDesc = error.name + " " + error.type;
 	
 	if (!wf.$catches || !wf.$catches[errDesc]) return;
 	
@@ -421,7 +420,7 @@ synci.prototype.runCatch = function (wf) {
 		failWf = new workflow ({
 			id:    wf.id,
 			tasks: catchTasks,
-			stage: stage
+			stage: 'presentation'
 		}, reqParams);
 
 	failWf.on ('completed', function () {
